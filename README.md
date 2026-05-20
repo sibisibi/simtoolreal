@@ -323,6 +323,12 @@ with FoundationPose → process into DexToolBench task trajectories.
 See [data_collection_and_processing.md](docs/data_collection_and_processing.md)
 for the full step-by-step guide.
 
+### Acquiring Real-World Objects
+
+To reproduce the real-world DexToolBench setup, see
+[acquiring_real_world_objects.md](docs/acquiring_real_world_objects.md) for
+links and notes for purchasing or otherwise acquiring the physical objects.
+
 ## Deployment
 
 ### Sim2Real
