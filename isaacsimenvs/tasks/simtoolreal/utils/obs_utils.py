@@ -18,9 +18,10 @@ NUM_JOINTS: int = 19  # FR3 (7) + XHand1 right (12)
 NUM_FINGERTIPS: int = 5
 NUM_KEYPOINTS: int = 4
 
-# Offset from the XHand1 ``palm`` link origin toward the grasp center.
-# TODO(032): untuned for XHand1 geometry; refine against rendered hand frames.
-PALM_CENTER_OFFSET: tuple[float, float, float] = (0.0, 0.0, 0.04)
+# Offset from `fr3_link7` (the wrist link the `palm` merged into) toward the
+# grasp center, ~0.16 m along the flange axis (analogous to the original iiwa
+# wrist offset). TODO(032): untuned for XHand1; refine against rendered frames.
+PALM_CENTER_OFFSET: tuple[float, float, float] = (0.0, 0.0, 0.16)
 
 # Shift fingertip body origins (distal finger links) to the approximate pad centers.
 # TODO(032): untuned for XHand1; distal-link origin is already near the pad.

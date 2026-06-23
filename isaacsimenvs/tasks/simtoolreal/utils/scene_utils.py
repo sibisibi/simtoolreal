@@ -45,7 +45,10 @@ JOINT_NAMES_CANONICAL: tuple[str, ...] = (
 )
 assert len(JOINT_NAMES_CANONICAL) == 19
 
-PALM_BODY_NAME = "palm"
+# The URDF importer merges the fixed-joint `palm` (and `fr3_link8`) into
+# `fr3_link7`, so the wrist link IS the palm body (analogous to the original
+# iiwa14_link_7). PALM_CENTER_OFFSET (obs_utils) shifts to the grasp center.
+PALM_BODY_NAME = "fr3_link7"
 # Merged fingertip bodies land on the distal finger links of the XHand.
 FINGERTIP_BODY_REGEX = "(thumb_rota_link2|index_rota_link2|mid_link2|ring_link2|pinky_link2)"
 FINGERTIP_LINK_NAMES: tuple[str, ...] = (

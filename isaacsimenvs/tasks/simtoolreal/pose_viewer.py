@@ -23,7 +23,7 @@ from .utils.scene_utils import JOINT_NAMES_CANONICAL
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-GITHUB_RAW_BASE_MAIN = "https://raw.githubusercontent.com/tylerlum/simtoolreal/main/"
+GITHUB_RAW_BASE_MAIN = "https://raw.githubusercontent.com/sibisibi/simtoolreal/fr3-xhand-port/"
 ROBOT_URDF_RELATIVE_PATH = "assets/urdf/fr3_xhand_description/fr3_xhand/fr3_xhand.urdf"
 TABLE_URDF_PATH = REPO_ROOT / "assets" / "urdf" / "table_narrow.urdf"
 
