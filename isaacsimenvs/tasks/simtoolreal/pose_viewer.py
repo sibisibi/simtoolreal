@@ -24,7 +24,7 @@ from .utils.scene_utils import JOINT_NAMES_CANONICAL
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 GITHUB_RAW_BASE_MAIN = "https://raw.githubusercontent.com/tylerlum/simtoolreal/main/"
-ROBOT_URDF_RELATIVE_PATH = "assets/urdf/kuka_sharpa_description/iiwa14_left_sharpa_adjusted_restricted.urdf"
+ROBOT_URDF_RELATIVE_PATH = "assets/urdf/fr3_xhand_description/fr3_xhand/fr3_xhand.urdf"
 TABLE_URDF_PATH = REPO_ROOT / "assets" / "urdf" / "table_narrow.urdf"
 
 

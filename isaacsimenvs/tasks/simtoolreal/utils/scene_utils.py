@@ -29,105 +29,65 @@ from .generate_objects import generate_handle_head_urdfs
 # Joint names / regexes / body names
 # ----------------------------------------------------------------------------
 
-ARM_JOINT_REGEX = "iiwa14_joint_.*"
-HAND_JOINT_REGEX = "left_.*"
+ARM_JOINT_REGEX = "fr3_joint.*"
+HAND_JOINT_REGEX = "(thumb|index|middle|ring|pinky)_joint.*"
 
 # Legacy policy order; Isaac Lab tensors are permuted at action/obs boundaries.
+# FR3 (7) + XHand1 right (12): thumb 3, index 3, middle/ring/pinky 2 each.
 JOINT_NAMES_CANONICAL: tuple[str, ...] = (
-    "iiwa14_joint_1", "iiwa14_joint_2", "iiwa14_joint_3", "iiwa14_joint_4",
-    "iiwa14_joint_5", "iiwa14_joint_6", "iiwa14_joint_7",
-    "left_1_thumb_CMC_FE", "left_thumb_CMC_AA", "left_thumb_MCP_FE",
-    "left_thumb_MCP_AA", "left_thumb_IP",
-    "left_2_index_MCP_FE", "left_index_MCP_AA", "left_index_PIP", "left_index_DIP",
-    "left_3_middle_MCP_FE", "left_middle_MCP_AA", "left_middle_PIP", "left_middle_DIP",
-    "left_4_ring_MCP_FE", "left_ring_MCP_AA", "left_ring_PIP", "left_ring_DIP",
-    "left_5_pinky_CMC", "left_pinky_MCP_FE", "left_pinky_MCP_AA",
-    "left_pinky_PIP", "left_pinky_DIP",
+    "fr3_joint1", "fr3_joint2", "fr3_joint3", "fr3_joint4",
+    "fr3_joint5", "fr3_joint6", "fr3_joint7",
+    "thumb_joint0", "thumb_joint1", "thumb_joint2",
+    "index_joint0", "index_joint1", "index_joint2",
+    "middle_joint0", "middle_joint1",
+    "ring_joint0", "ring_joint1",
+    "pinky_joint0", "pinky_joint1",
 )
-assert len(JOINT_NAMES_CANONICAL) == 29
+assert len(JOINT_NAMES_CANONICAL) == 19
 
-PALM_BODY_NAME = "iiwa14_link_7"
-# Merged fingertip bodies land on the DP links in both sims.
-FINGERTIP_BODY_REGEX = "left_(index|middle|ring|thumb|pinky)_DP"
+PALM_BODY_NAME = "palm"
+# Merged fingertip bodies land on the distal finger links of the XHand.
+FINGERTIP_BODY_REGEX = "(thumb_rota_link2|index_rota_link2|mid_link2|ring_link2|pinky_link2)"
 FINGERTIP_LINK_NAMES: tuple[str, ...] = (
-    "left_index_DP", "left_middle_DP", "left_ring_DP",
-    "left_thumb_DP", "left_pinky_DP",
+    "index_rota_link2", "mid_link2", "ring_link2",
+    "thumb_rota_link2", "pinky_link2",
 )
 
 
-# Per-joint PD gains and dynamics (verified with pretrained checkpoint).
+# Per-joint PD gains and dynamics (FR3 arm + XHand1 right; from Yuan-Xinyi/xhand).
 ARM_JOINT_STIFFNESS: dict[str, float] = {
-    "iiwa14_joint_1": 600.0, "iiwa14_joint_2": 600.0, "iiwa14_joint_3": 500.0,
-    "iiwa14_joint_4": 400.0, "iiwa14_joint_5": 200.0, "iiwa14_joint_6": 200.0,
-    "iiwa14_joint_7": 200.0,
+    "fr3_joint1": 400.0, "fr3_joint2": 400.0, "fr3_joint3": 400.0,
+    "fr3_joint4": 400.0, "fr3_joint5": 400.0, "fr3_joint6": 400.0,
+    "fr3_joint7": 400.0,
 }
 ARM_JOINT_DAMPING: dict[str, float] = {
-    "iiwa14_joint_1": 27.027026473513512, "iiwa14_joint_2": 27.027026473513512,
-    "iiwa14_joint_3": 24.672186769721083, "iiwa14_joint_4": 22.067474708266914,
-    "iiwa14_joint_5": 9.752538131173853, "iiwa14_joint_6": 9.147747263670984,
-    "iiwa14_joint_7": 9.147747263670984,
+    "fr3_joint1": 80.0, "fr3_joint2": 80.0, "fr3_joint3": 80.0,
+    "fr3_joint4": 80.0, "fr3_joint5": 80.0, "fr3_joint6": 80.0,
+    "fr3_joint7": 80.0,
 }
 
-HAND_JOINT_STIFFNESS: dict[str, float] = {
-    "left_1_thumb_CMC_FE": 6.95, "left_thumb_CMC_AA": 13.2, "left_thumb_MCP_FE": 4.76,
-    "left_thumb_MCP_AA": 6.62, "left_thumb_IP": 0.9,
-    "left_2_index_MCP_FE": 4.76, "left_index_MCP_AA": 6.62,
-    "left_index_PIP": 0.9, "left_index_DIP": 0.9,
-    "left_3_middle_MCP_FE": 4.76, "left_middle_MCP_AA": 6.62,
-    "left_middle_PIP": 0.9, "left_middle_DIP": 0.9,
-    "left_4_ring_MCP_FE": 4.76, "left_ring_MCP_AA": 6.62,
-    "left_ring_PIP": 0.9, "left_ring_DIP": 0.9,
-    "left_5_pinky_CMC": 1.38, "left_pinky_MCP_FE": 4.76, "left_pinky_MCP_AA": 6.62,
-    "left_pinky_PIP": 0.9, "left_pinky_DIP": 0.9,
-}
-HAND_JOINT_DAMPING: dict[str, float] = {
-    "left_1_thumb_CMC_FE": 0.28676845, "left_thumb_CMC_AA": 0.40845109,
-    "left_thumb_MCP_FE": 0.20394083, "left_thumb_MCP_AA": 0.24044435,
-    "left_thumb_IP": 0.04190723,
-    "left_2_index_MCP_FE": 0.20859232, "left_index_MCP_AA": 0.24595532,
-    "left_index_PIP": 0.04243185, "left_index_DIP": 0.03504461,
-    "left_3_middle_MCP_FE": 0.2085923, "left_middle_MCP_AA": 0.24595532,
-    "left_middle_PIP": 0.04243185, "left_middle_DIP": 0.03504461,
-    "left_4_ring_MCP_FE": 0.20859226, "left_ring_MCP_AA": 0.24595528,
-    "left_ring_PIP": 0.04243183, "left_ring_DIP": 0.0350446,
-    "left_5_pinky_CMC": 0.02782345, "left_pinky_MCP_FE": 0.20859229,
-    "left_pinky_MCP_AA": 0.24595528, "left_pinky_PIP": 0.04243183,
-    "left_pinky_DIP": 0.0350446,
-}
-HAND_JOINT_ARMATURE: dict[str, float] = {
-    "left_1_thumb_CMC_FE": 0.0032, "left_thumb_CMC_AA": 0.0032,
-    "left_thumb_MCP_FE": 0.00265, "left_thumb_MCP_AA": 0.00265, "left_thumb_IP": 0.0006,
-    "left_2_index_MCP_FE": 0.00265, "left_index_MCP_AA": 0.00265,
-    "left_index_PIP": 0.0006, "left_index_DIP": 0.00042,
-    "left_3_middle_MCP_FE": 0.00265, "left_middle_MCP_AA": 0.00265,
-    "left_middle_PIP": 0.0006, "left_middle_DIP": 0.00042,
-    "left_4_ring_MCP_FE": 0.00265, "left_ring_MCP_AA": 0.00265,
-    "left_ring_PIP": 0.0006, "left_ring_DIP": 0.00042,
-    "left_5_pinky_CMC": 0.00012, "left_pinky_MCP_FE": 0.00265,
-    "left_pinky_MCP_AA": 0.00265, "left_pinky_PIP": 0.0006, "left_pinky_DIP": 0.00042,
-}
-HAND_JOINT_FRICTION: dict[str, float] = {
-    "left_1_thumb_CMC_FE": 0.132, "left_thumb_CMC_AA": 0.132,
-    "left_thumb_MCP_FE": 0.07456, "left_thumb_MCP_AA": 0.07456, "left_thumb_IP": 0.01276,
-    "left_2_index_MCP_FE": 0.07456, "left_index_MCP_AA": 0.07456,
-    "left_index_PIP": 0.01276, "left_index_DIP": 0.00378738,
-    "left_3_middle_MCP_FE": 0.07456, "left_middle_MCP_AA": 0.07456,
-    "left_middle_PIP": 0.01276, "left_middle_DIP": 0.00378738,
-    "left_4_ring_MCP_FE": 0.07456, "left_ring_MCP_AA": 0.07456,
-    "left_ring_PIP": 0.01276, "left_ring_DIP": 0.00378738,
-    "left_5_pinky_CMC": 0.012, "left_pinky_MCP_FE": 0.07456,
-    "left_pinky_MCP_AA": 0.07456, "left_pinky_PIP": 0.01276, "left_pinky_DIP": 0.00378738,
-}
+# XHand1 right, 12 active DOF (thumb 3, index 3, middle/ring/pinky 2 each).
+_HAND_JOINTS: tuple[str, ...] = (
+    "thumb_joint0", "thumb_joint1", "thumb_joint2",
+    "index_joint0", "index_joint1", "index_joint2",
+    "middle_joint0", "middle_joint1",
+    "ring_joint0", "ring_joint1",
+    "pinky_joint0", "pinky_joint1",
+)
+HAND_JOINT_STIFFNESS: dict[str, float] = {j: 3.0 for j in _HAND_JOINTS}
+HAND_JOINT_DAMPING: dict[str, float] = {j: 0.1 for j in _HAND_JOINTS}
+HAND_JOINT_ARMATURE: dict[str, float] = {j: 0.001 for j in _HAND_JOINTS}
+HAND_JOINT_FRICTION: dict[str, float] = {j: 0.0 for j in _HAND_JOINTS}
 
 assert len(ARM_JOINT_STIFFNESS) == 7 and len(ARM_JOINT_DAMPING) == 7
-assert len(HAND_JOINT_STIFFNESS) == 22 and len(HAND_JOINT_DAMPING) == 22
-assert len(HAND_JOINT_ARMATURE) == 22 and len(HAND_JOINT_FRICTION) == 22
+assert len(HAND_JOINT_STIFFNESS) == 12 and len(HAND_JOINT_DAMPING) == 12
+assert len(HAND_JOINT_ARMATURE) == 12 and len(HAND_JOINT_FRICTION) == 12
 
-# Proven-working default arm pose (isaacsim_conversion/isaacsim_env.py:101-109).
+# FR3 "ready" home pose (matches Yuan-Xinyi/xhand FR3_XHAND_CFG init_state).
 ARM_DEFAULT_JOINT_POS: dict[str, float] = {
-    "iiwa14_joint_1": -1.571, "iiwa14_joint_2": 1.571, "iiwa14_joint_3": 0.0,
-    "iiwa14_joint_4": 1.376, "iiwa14_joint_5": 0.0, "iiwa14_joint_6": 1.485,
-    "iiwa14_joint_7": 1.308,
+    "fr3_joint1": 0.0, "fr3_joint2": -0.785, "fr3_joint3": 0.0,
+    "fr3_joint4": -2.356, "fr3_joint5": 0.0, "fr3_joint6": 1.571,
+    "fr3_joint7": 0.785,
 }
 
 _CONTACT_OFFSET = 0.002
@@ -154,8 +114,8 @@ def build_robot_articulation_usd_cfg(
     arm_default = dict(ARM_DEFAULT_JOINT_POS)
     if start_arm_higher:
         # Matches the gym env's startArmHigher eval pose.
-        arm_default["iiwa14_joint_2"] -= math.radians(10.0)
-        arm_default["iiwa14_joint_4"] += math.radians(10.0)
+        arm_default["fr3_joint2"] -= math.radians(10.0)
+        arm_default["fr3_joint4"] += math.radians(10.0)
     return ArticulationCfg(
         prim_path="/World/envs/env_.*/Robot",
         spawn=UsdFileCfg(usd_path=usd_path),
