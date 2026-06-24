@@ -540,4 +540,4 @@
     <limit lower="0.0" upper="1.92" effort="10" velocity="3.14" />
   </joint>
 
-<joint name="hand_mount" type="fixed"><parent link="fr3_link8" /><child link="palm" /><origin xyz="0 0 0" rpy="0 0 3.14159" /></joint></robot>
+<joint name="hand_mount" type="fixed"><parent link="fr3_link8" /><child link="palm" /><origin xyz="-0.017 -0.017 0.051" rpy="-1.5708 0 -0.7854" /></joint></robot>
