@@ -86,11 +86,15 @@ assert len(ARM_JOINT_STIFFNESS) == 7 and len(ARM_JOINT_DAMPING) == 7
 assert len(HAND_JOINT_STIFFNESS) == 12 and len(HAND_JOINT_DAMPING) == 12
 assert len(HAND_JOINT_ARMATURE) == 12 and len(HAND_JOINT_FRICTION) == 12
 
-# FR3 "ready" home pose (matches Yuan-Xinyi/xhand FR3_XHAND_CFG init_state).
+# FR3 reset over the table. joint1 -90 aims the arm at the workspace like the
+# author's KUKA (iiwa14_joint_1 = -1.571); joint7 -45 sets the heading so the
+# disk and hand point forward over the table; fold -0.6/-2.2/1.9 brings the hand
+# down onto the surface. Adapter clock -45 is fixed in the URDF (hand_mount).
+# Confirmed by local IsaacGym renders (dexmanip 007 reset-fix page).
 ARM_DEFAULT_JOINT_POS: dict[str, float] = {
-    "fr3_joint1": 0.0, "fr3_joint2": -0.785, "fr3_joint3": 0.0,
-    "fr3_joint4": -2.356, "fr3_joint5": 0.0, "fr3_joint6": 1.571,
-    "fr3_joint7": 0.785,
+    "fr3_joint1": -1.571, "fr3_joint2": -0.6, "fr3_joint3": 0.0,
+    "fr3_joint4": -2.2, "fr3_joint5": 0.0, "fr3_joint6": 1.9,
+    "fr3_joint7": -0.785,
 }
 
 _CONTACT_OFFSET = 0.002
