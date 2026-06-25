@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import os
 
 import torch
 
@@ -23,9 +24,26 @@ NUM_KEYPOINTS: int = 4
 # wrist offset). TODO(032): untuned for XHand1; refine against rendered frames.
 PALM_CENTER_OFFSET: tuple[float, float, float] = (0.0, 0.0, 0.16)
 
-# Shift fingertip body origins (distal finger links) to the approximate pad centers.
-# TODO(032): untuned for XHand1; distal-link origin is already near the pad.
+# Fingertip-reward geometry. 009-pd-reward-sweep crosses this with the hand PD.
+# distal (current): the *_link2 distal-phalanx origin, offset (0,0,0).
+# pad: XHand's own fingertip pads, the per-finger *_joint3 origins from the
+# verified v1.3 URDF. merge_fixed_joints folds each fixed *_tip into its
+# *_link2 parent, so a constant local offset equals the true pad position
+# exactly. Keyed by body name so the order always matches
+# env._fingertip_body_names (== _fingertip_body_ids order). Selected by env
+# var, default distal == current behavior.
 FINGERTIP_OFFSET: tuple[float, float, float] = (0.0, 0.0, 0.0)
+FINGERTIP_PAD_OFFSET_BY_BODY: dict[str, tuple[float, float, float]] = {
+    "thumb_rota_link2": (0.0, 0.0502276499414863, 0.0),
+    "index_rota_link2": (0.0, 0.0, 0.0422482924089424),
+    "mid_link2": (0.0, 0.0, 0.042248),
+    "ring_link2": (0.0, 0.0, 0.0422482924089404),
+    "pinky_link2": (0.0, 0.0, 0.0422482924089405),
+}
+_FT_TARGET = os.environ.get("XHAND_FT_TARGET", "distal")
+assert _FT_TARGET in ("distal", "pad"), (
+    f"XHAND_FT_TARGET={_FT_TARGET!r} not in ('distal', 'pad')"
+)
 
 # Object-frame keypoint corners before scaling.
 KEYPOINT_CORNERS: tuple[tuple[int, int, int], ...] = (
@@ -91,16 +109,52 @@ def _perturb_quat(q_wxyz: torch.Tensor, max_deg: float) -> torch.Tensor:
 def _apply_local_offset(
     pos_w: torch.Tensor,
     rot_wxyz: torch.Tensor,
-    offset: tuple[float, float, float],
+    offset,
     batch_shape: tuple[int, ...],
 ) -> torch.Tensor:
-    """Apply one local-frame offset to batched world poses."""
+    """Apply a local-frame offset to batched world poses.
+
+    `offset` is either a shared (3,) vector applied to every pose, or a
+    per-element (M, 3) array whose M matches the last batch dim (the 5
+    fingertips). 009 uses the per-finger form for the pad target.
+    """
     offset_t = torch.as_tensor(offset, device=pos_w.device, dtype=pos_w.dtype)
-    offset_t = offset_t.expand(*batch_shape, 3)
+    if offset_t.ndim == 1:
+        offset_t = offset_t.expand(*batch_shape, 3)
+    elif offset_t.ndim == 2:
+        assert offset_t.shape[0] == batch_shape[-1], (
+            f"per-element offset {tuple(offset_t.shape)} vs batch {batch_shape}"
+        )
+        offset_t = offset_t.unsqueeze(0).expand(*batch_shape, 3)
+    else:
+        raise ValueError(f"offset must be (3,) or (M, 3), got {tuple(offset_t.shape)}")
     shifted = quat_apply(
         rot_wxyz.reshape(-1, 4), offset_t.reshape(-1, 3)
     ).reshape(*batch_shape, 3)
     return pos_w + shifted
+
+
+def _fingertip_offset(env, device, dtype):
+    """Per-finger local offset for the active fingertip-reward target.
+
+    distal -> shared (0,0,0). pad -> (5,3) ordered to env._fingertip_body_names
+    (== _fingertip_body_ids order). Built once and cached on the env.
+    """
+    cached = getattr(env, "_fingertip_offset_cached", None)
+    if cached is not None and cached.device == device:
+        return cached
+    if _FT_TARGET == "pad":
+        rows = []
+        for name in env._fingertip_body_names:
+            assert name in FINGERTIP_PAD_OFFSET_BY_BODY, (
+                f"no pad offset for fingertip body {name!r}"
+            )
+            rows.append(FINGERTIP_PAD_OFFSET_BY_BODY[name])
+        cached = torch.tensor(rows, device=device, dtype=dtype)  # (5, 3)
+    else:
+        cached = torch.as_tensor(FINGERTIP_OFFSET, device=device, dtype=dtype)
+    env._fingertip_offset_cached = cached
+    return cached
 
 
 def _keypoints_world(
@@ -167,7 +221,15 @@ def compute_intermediate_values(env) -> None:
     goal_rot = env.goal_viz.data.root_quat_w
 
     ft_state = env.robot.data.body_state_w[:, env._fingertip_body_ids, :]
-    ft_pos = ft_state[:, :, 0:3] - env_origins.unsqueeze(1)
+    # 009: shift to the active fingertip-reward target (distal origin or pad)
+    # before measuring fingertip-object distance, the signal behind
+    # fingertip_delta_rew and closest_fingertip_dist.
+    ft_pos = _apply_local_offset(
+        ft_state[:, :, 0:3],
+        ft_state[:, :, 3:7],
+        _fingertip_offset(env, ft_state.device, ft_state.dtype),
+        (env.num_envs, NUM_FINGERTIPS),
+    ) - env_origins.unsqueeze(1)
     env._curr_fingertip_distances = torch.norm(
         ft_pos - obj_pos.unsqueeze(1), dim=-1
     )  # (N, 5)
@@ -255,7 +317,7 @@ def build_observations(env) -> dict[str, torch.Tensor]:
     ft_pos_w = _apply_local_offset(
         ft_body_pos_w,
         ft_body_rot_w,
-        FINGERTIP_OFFSET,
+        _fingertip_offset(env, ft_body_pos_w.device, ft_body_pos_w.dtype),
         (env.num_envs, NUM_FINGERTIPS),
     )
 

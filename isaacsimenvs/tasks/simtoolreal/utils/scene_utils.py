@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import os
 import shutil
 import tempfile
 import time
@@ -77,8 +78,25 @@ _HAND_JOINTS: tuple[str, ...] = (
     "ring_joint0", "ring_joint1",
     "pinky_joint0", "pinky_joint1",
 )
-HAND_JOINT_STIFFNESS: dict[str, float] = {j: 3.0 for j in _HAND_JOINTS}
-HAND_JOINT_DAMPING: dict[str, float] = {j: 0.1 for j in _HAND_JOINTS}
+# 009-pd-reward-sweep: hand PD pair selected by env var, default = current
+# 3.0/0.1. Each pair is a published XHand1 grasping config (FACTS.md):
+#   3_0.1 Isaac Lab fingertip default (007 control); 40_5 trackr sim-to-real
+#   anchor; 100_10 ConTrack; 200_20 magicsim; 500_30 ManipTrans. Per-joint
+#   uniform across all 12 hand joints, exactly as before.
+_HAND_PD_TABLE: dict[str, tuple[float, float]] = {
+    "3_0.1": (3.0, 0.1),
+    "40_5": (40.0, 5.0),
+    "100_10": (100.0, 10.0),
+    "200_20": (200.0, 20.0),
+    "500_30": (500.0, 30.0),
+}
+_HAND_PD_KEY = os.environ.get("XHAND_HAND_PD", "3_0.1")
+assert _HAND_PD_KEY in _HAND_PD_TABLE, (
+    f"XHAND_HAND_PD={_HAND_PD_KEY!r} not in {sorted(_HAND_PD_TABLE)}"
+)
+_HAND_KP, _HAND_KD = _HAND_PD_TABLE[_HAND_PD_KEY]
+HAND_JOINT_STIFFNESS: dict[str, float] = {j: _HAND_KP for j in _HAND_JOINTS}
+HAND_JOINT_DAMPING: dict[str, float] = {j: _HAND_KD for j in _HAND_JOINTS}
 HAND_JOINT_ARMATURE: dict[str, float] = {j: 0.001 for j in _HAND_JOINTS}
 HAND_JOINT_FRICTION: dict[str, float] = {j: 0.0 for j in _HAND_JOINTS}
 

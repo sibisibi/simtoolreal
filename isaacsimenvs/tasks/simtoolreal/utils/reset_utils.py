@@ -34,7 +34,9 @@ def allocate_state_buffers(env) -> None:
     env._arm_joint_ids = env.robot.find_joints(ARM_JOINT_REGEX)[0]      # 7
     env._hand_joint_ids = env.robot.find_joints(HAND_JOINT_REGEX)[0]     # 22
     env._palm_body_id = env.robot.find_bodies(PALM_BODY_NAME)[0][0]
-    env._fingertip_body_ids = env.robot.find_bodies(FINGERTIP_BODY_REGEX)[0]  # 5
+    _ft_ids, _ft_names = env.robot.find_bodies(FINGERTIP_BODY_REGEX)
+    env._fingertip_body_ids = _ft_ids  # 5
+    env._fingertip_body_names = list(_ft_names)  # 009: same order as ids
     assert len(env._fingertip_body_ids) == NUM_FINGERTIPS
 
     # Convert between Lab parser order and canonical policy order.
