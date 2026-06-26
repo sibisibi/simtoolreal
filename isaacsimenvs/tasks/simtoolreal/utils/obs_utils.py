@@ -40,7 +40,7 @@ FINGERTIP_PAD_OFFSET_BY_BODY: dict[str, tuple[float, float, float]] = {
     "ring_link2": (0.0, 0.0, 0.0422482924089404),
     "pinky_link2": (0.0, 0.0, 0.0422482924089405),
 }
-_FT_TARGET = os.environ.get("XHAND_FT_TARGET", "distal")
+_FT_TARGET = os.environ.get("XHAND_FT_TARGET", "pad")
 assert _FT_TARGET in ("distal", "pad"), (
     f"XHAND_FT_TARGET={_FT_TARGET!r} not in ('distal', 'pad')"
 )
