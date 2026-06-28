@@ -54,9 +54,6 @@ from isaaclab.utils import configclass
 
 @configclass
 class AssetsCfg:
-    robot_urdf: str = (
-        "assets/urdf/kuka_sharpa_description/iiwa14_left_sharpa_adjusted_restricted.urdf"
-    )
     table_urdf: str = "assets/urdf/table_narrow.urdf"
     # Per-env scale ranges applied to the table mesh at scene-build time.
     # Sampled independently per env: sx ~ U(table_scale_range_x), sy ~ U(table_scale_range_y).
@@ -244,13 +241,6 @@ class StudentObsCfg:
         # `/visuals` group; multi-link URDFs (fabrica) match each link's
         # `/visuals` group independently, which is what we want.
         "/World/envs/env_.*/Object/.*/visuals",
-        # iiwa arm + sharpa hand link visuals. Explicit prefixes (not a
-        # broad `/Robot/.*/visuals`) so the parser doesn't try to make
-        # rigid-body views for non-link prims like `/Robot/Looks` /
-        # `/Robot/joints` (those stall sensor init for several minutes
-        # with PhysX retries before timing out).
-        "/World/envs/env_.*/Robot/iiwa14_link_.*/visuals",
-        "/World/envs/env_.*/Robot/left_.*/visuals",
     )
     # Rays that don't intersect any mesh return max_distance (instead of NaN)
     # when `depth_clipping_behavior == "max"`. Keep at the rasterizer's default
@@ -543,10 +533,12 @@ class SimToolRealEnvCfg(DirectRLEnvCfg):
     key paths resolve to these fields via ``configclass.from_dict``.
     """
 
+    robot: str = "fr3-xhand-adapter"
+
     # --- DirectRLEnvCfg required fields ---
     decimation: int = 2  # 2 physics substeps per policy step
     episode_length_s: float = 10.0  # 600 policy steps * 2 * (1/120) = 10s
-    action_space: int = 29  # 7-DOF IIWA + 22-DOF SHARPA hand
+    action_space: int = 19  # 7-DOF FR3 + 12-DOF XHand1 right
     # Obs/state sizes are derived from obs.obs_list / obs.state_list at env init.
     # Placeholder keeps the configclass instantiable before the env computes the
     # final spaces.

@@ -12,13 +12,6 @@ from isaaclab.utils.math import random_orientation
 from .action_utils import sample_log_uniform
 from .goal_sampling import sample_absolute_goal_pose, sample_delta_goal_pose
 from .obs_utils import KEYPOINT_CORNERS, NUM_FINGERTIPS
-from .scene_utils import (
-    ARM_JOINT_REGEX,
-    FINGERTIP_BODY_REGEX,
-    HAND_JOINT_REGEX,
-    JOINT_NAMES_CANONICAL,
-    PALM_BODY_NAME,
-)
 
 def allocate_state_buffers(env) -> None:
     """Populate every per-env buffer + index cache used by the hooks.
@@ -31,21 +24,21 @@ def allocate_state_buffers(env) -> None:
     rew = env.cfg.reward
 
     # --- Joint/body id caches ---
-    env._arm_joint_ids = env.robot.find_joints(ARM_JOINT_REGEX)[0]      # 7
-    env._hand_joint_ids = env.robot.find_joints(HAND_JOINT_REGEX)[0]     # 22
-    env._palm_body_id = env.robot.find_bodies(PALM_BODY_NAME)[0][0]
-    env._fingertip_body_ids = env.robot.find_bodies(FINGERTIP_BODY_REGEX)[0]  # 5
-    assert len(env._fingertip_body_ids) == NUM_FINGERTIPS
+    env._arm_joint_ids = env.robot.find_joints(env.cfg.robot.arm_joint_regex)[0]      # 7
+    env._hand_joint_ids = env.robot.find_joints(env.cfg.robot.hand_joint_regex)[0]     # 22
+    env._palm_body_id = env.robot.find_bodies(env.cfg.robot.palm_body)[0][0]
+    _ft_ids, _ft_names = env.robot.find_bodies(env.cfg.robot.fingertip_body_regex)
+    env._fingertip_body_ids = _ft_ids  # 5
+    env._fingertip_body_names = list(_ft_names)  # 009: same order as ids
 
     # Convert between Lab parser order and canonical policy order.
     lab_names = list(env.robot.data.joint_names)
-    assert set(lab_names) == set(JOINT_NAMES_CANONICAL)
     env._perm_canon_to_lab = torch.tensor(
-        [JOINT_NAMES_CANONICAL.index(n) for n in lab_names],
+        [env.cfg.robot.joint_order.index(n) for n in lab_names],
         device=env.device, dtype=torch.long,
     )
     env._perm_lab_to_canon = torch.tensor(
-        [lab_names.index(n) for n in JOINT_NAMES_CANONICAL],
+        [lab_names.index(n) for n in env.cfg.robot.joint_order],
         device=env.device, dtype=torch.long,
     )
 
