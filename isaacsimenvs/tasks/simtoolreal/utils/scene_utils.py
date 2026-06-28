@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import math
-import os
 import shutil
 import tempfile
 import time
@@ -26,95 +25,6 @@ from isaaclab.sim.utils import find_matching_prim_paths, get_current_stage
 from .generate_objects import generate_handle_head_urdfs
 
 
-# ----------------------------------------------------------------------------
-# Joint names / regexes / body names
-# ----------------------------------------------------------------------------
-
-ARM_JOINT_REGEX = "fr3_joint.*"
-HAND_JOINT_REGEX = "(thumb|index|middle|ring|pinky)_joint.*"
-
-# Legacy policy order; Isaac Lab tensors are permuted at action/obs boundaries.
-# FR3 (7) + XHand1 right (12): thumb 3, index 3, middle/ring/pinky 2 each.
-JOINT_NAMES_CANONICAL: tuple[str, ...] = (
-    "fr3_joint1", "fr3_joint2", "fr3_joint3", "fr3_joint4",
-    "fr3_joint5", "fr3_joint6", "fr3_joint7",
-    "thumb_joint0", "thumb_joint1", "thumb_joint2",
-    "index_joint0", "index_joint1", "index_joint2",
-    "middle_joint0", "middle_joint1",
-    "ring_joint0", "ring_joint1",
-    "pinky_joint0", "pinky_joint1",
-)
-assert len(JOINT_NAMES_CANONICAL) == 19
-
-# The URDF importer merges the fixed-joint `palm` (and `fr3_link8`) into
-# `fr3_link7`, so the wrist link IS the palm body (analogous to the original
-# iiwa14_link_7). PALM_CENTER_OFFSET (obs_utils) shifts to the grasp center.
-PALM_BODY_NAME = "fr3_link7"
-# Merged fingertip bodies land on the distal finger links of the XHand.
-FINGERTIP_BODY_REGEX = "(thumb_rota_link2|index_rota_link2|mid_link2|ring_link2|pinky_link2)"
-FINGERTIP_LINK_NAMES: tuple[str, ...] = (
-    "index_rota_link2", "mid_link2", "ring_link2",
-    "thumb_rota_link2", "pinky_link2",
-)
-
-
-# Per-joint PD gains and dynamics (FR3 arm + XHand1 right; from Yuan-Xinyi/xhand).
-ARM_JOINT_STIFFNESS: dict[str, float] = {
-    "fr3_joint1": 400.0, "fr3_joint2": 400.0, "fr3_joint3": 400.0,
-    "fr3_joint4": 400.0, "fr3_joint5": 400.0, "fr3_joint6": 400.0,
-    "fr3_joint7": 400.0,
-}
-ARM_JOINT_DAMPING: dict[str, float] = {
-    "fr3_joint1": 80.0, "fr3_joint2": 80.0, "fr3_joint3": 80.0,
-    "fr3_joint4": 80.0, "fr3_joint5": 80.0, "fr3_joint6": 80.0,
-    "fr3_joint7": 80.0,
-}
-
-# XHand1 right, 12 active DOF (thumb 3, index 3, middle/ring/pinky 2 each).
-_HAND_JOINTS: tuple[str, ...] = (
-    "thumb_joint0", "thumb_joint1", "thumb_joint2",
-    "index_joint0", "index_joint1", "index_joint2",
-    "middle_joint0", "middle_joint1",
-    "ring_joint0", "ring_joint1",
-    "pinky_joint0", "pinky_joint1",
-)
-# 009-pd-reward-sweep: hand PD pair selected by env var, default = current
-# 3.0/0.1. Each pair is a published XHand1 grasping config (FACTS.md):
-#   3_0.1 Isaac Lab fingertip default (007 control); 40_5 trackr sim-to-real
-#   anchor; 100_10 ConTrack; 200_20 magicsim; 500_30 ManipTrans. Per-joint
-#   uniform across all 12 hand joints, exactly as before.
-_HAND_PD_TABLE: dict[str, tuple[float, float]] = {
-    "3_0.1": (3.0, 0.1),
-    "40_5": (40.0, 5.0),
-    "100_10": (100.0, 10.0),
-    "200_20": (200.0, 20.0),
-    "500_30": (500.0, 30.0),
-}
-_HAND_PD_KEY = os.environ.get("XHAND_HAND_PD", "3_0.1")
-assert _HAND_PD_KEY in _HAND_PD_TABLE, (
-    f"XHAND_HAND_PD={_HAND_PD_KEY!r} not in {sorted(_HAND_PD_TABLE)}"
-)
-_HAND_KP, _HAND_KD = _HAND_PD_TABLE[_HAND_PD_KEY]
-HAND_JOINT_STIFFNESS: dict[str, float] = {j: _HAND_KP for j in _HAND_JOINTS}
-HAND_JOINT_DAMPING: dict[str, float] = {j: _HAND_KD for j in _HAND_JOINTS}
-HAND_JOINT_ARMATURE: dict[str, float] = {j: 0.001 for j in _HAND_JOINTS}
-HAND_JOINT_FRICTION: dict[str, float] = {j: 0.0 for j in _HAND_JOINTS}
-
-assert len(ARM_JOINT_STIFFNESS) == 7 and len(ARM_JOINT_DAMPING) == 7
-assert len(HAND_JOINT_STIFFNESS) == 12 and len(HAND_JOINT_DAMPING) == 12
-assert len(HAND_JOINT_ARMATURE) == 12 and len(HAND_JOINT_FRICTION) == 12
-
-# FR3 reset over the table. joint1 -90 aims the arm at the workspace like the
-# author's KUKA (iiwa14_joint_1 = -1.571); joint7 -45 sets the heading so the
-# disk and hand point forward over the table; fold -0.6/-2.2/1.9 brings the hand
-# down onto the surface. Adapter clock -45 is fixed in the URDF (hand_mount).
-# Confirmed by local IsaacGym renders (dexmanip 007 reset-fix page).
-ARM_DEFAULT_JOINT_POS: dict[str, float] = {
-    "fr3_joint1": -1.571, "fr3_joint2": -0.6, "fr3_joint3": 0.0,
-    "fr3_joint4": -2.2, "fr3_joint5": 0.0, "fr3_joint6": 1.9,
-    "fr3_joint7": -0.785,
-}
-
 _CONTACT_OFFSET = 0.002
 _REST_OFFSET = 0.0
 
@@ -134,13 +44,14 @@ _PHYSICS_SPECS: dict[str, tuple[str, str, str]] = {
 
 
 def build_robot_articulation_usd_cfg(
-    usd_path: str, *, start_arm_higher: bool = False
+    usd_path: str, robot, *, start_arm_higher: bool = False
 ) -> ArticulationCfg:
-    arm_default = dict(ARM_DEFAULT_JOINT_POS)
+    arm_default = dict(robot.arm_default_pos)
     if start_arm_higher:
         # Matches the gym env's startArmHigher eval pose.
-        arm_default["fr3_joint2"] -= math.radians(10.0)
-        arm_default["fr3_joint4"] += math.radians(10.0)
+        arm_names = list(robot.arm_default_pos)
+        arm_default[arm_names[1]] -= math.radians(10.0)
+        arm_default[arm_names[3]] += math.radians(10.0)
     return ArticulationCfg(
         prim_path="/World/envs/env_.*/Robot",
         spawn=UsdFileCfg(usd_path=usd_path),
@@ -149,21 +60,21 @@ def build_robot_articulation_usd_cfg(
             rot=(1.0, 0.0, 0.0, 0.0),
             joint_pos={
                 **arm_default,
-                **{name: 0.0 for name in HAND_JOINT_STIFFNESS},
+                **{name: 0.0 for name in robot.hand_stiffness},
             },
             joint_vel={".*": 0.0},
         ),
         actuators={
             "arm": ImplicitActuatorCfg(
-                joint_names_expr=[ARM_JOINT_REGEX],
-                stiffness=ARM_JOINT_STIFFNESS,
-                damping=ARM_JOINT_DAMPING,
+                joint_names_expr=[robot.arm_joint_regex],
+                stiffness=robot.arm_stiffness,
+                damping=robot.arm_damping,
             ),
             "hand": ImplicitActuatorCfg(
-                joint_names_expr=[HAND_JOINT_REGEX],
-                stiffness=HAND_JOINT_STIFFNESS,
-                damping=HAND_JOINT_DAMPING,
-                armature=HAND_JOINT_ARMATURE,
+                joint_names_expr=[robot.hand_joint_regex],
+                stiffness=robot.hand_stiffness,
+                damping=robot.hand_damping,
+                armature=robot.hand_armature,
             ),
         },
     )
@@ -459,7 +370,7 @@ def setup_student_camera(env) -> None:
                     prim_expr=str(expr), track_mesh_transforms=False
                 )
             )
-        for expr in tuple(cfg.raycast_dynamic_prim_exprs):
+        for expr in tuple(cfg.raycast_dynamic_prim_exprs) + tuple(env.cfg.robot.raycast_link_exprs):
             expanded = _expand_link_wildcard(str(expr), env.num_envs)
             print(
                 f"[raycaster] DYNAMIC target: {expr!r} -> "
@@ -1474,7 +1385,7 @@ def apply_physx_material_properties(env) -> None:
     for link_name, link_path in zip(robot_view.shared_metatype.link_names, robot_view.link_paths[0]):
         link_view = env.robot._physics_sim_view.create_rigid_body_view(link_path)
         shape_end = shape_start + link_view.max_shapes
-        if link_name in FINGERTIP_LINK_NAMES:
+        if link_name in env.cfg.robot.fingertip_bodies:
             robot_materials[:, shape_start:shape_end] = fingertip
             fingertip_mask[shape_start:shape_end] = True
         shape_start = shape_end
@@ -1613,7 +1524,7 @@ def setup_scene(env) -> None:
 
     robot_usd_path = _bake_usd(
         _convert_urdf_to_usd(
-            assets_cfg.robot_urdf, usd_work_dir,
+            env.cfg.robot.urdf, usd_work_dir,
             fix_base=True, self_collision=False,
             joint_drive=_robot_joint_drive_cfg(),
         ),
@@ -1684,6 +1595,7 @@ def setup_scene(env) -> None:
     # 4. Spawn assets.
     env.robot = Articulation(build_robot_articulation_usd_cfg(
         robot_usd_path,
+        env.cfg.robot,
         start_arm_higher=getattr(env.cfg.reset, "start_arm_higher", False),
     ))
     env.table = RigidObject(build_rigid_object_cfg("/World/envs/env_.*/Table", table_usd_paths))

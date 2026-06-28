@@ -46,6 +46,7 @@ def main() -> None:
         help="Key in gym.register kwargs for the rl_games YAML. "
         "Use rl_games_sapg_cfg_entry_point for SAPG.",
     )
+    parser.add_argument("--robot", default=None, help="Robot profile: kuka-sharpa, fr3-xhand-adapter, fr3-xhand")
     # --- Runtime toggles ---
     parser.add_argument("--test", action="store_true", help="Run inference (player) instead of training")
     parser.add_argument("--checkpoint", default=None, help="Path to .pth to restore")
@@ -100,6 +101,8 @@ def main() -> None:
     if args_cli.capture_video:
         args_cli.enable_cameras = True
 
+    if args_cli.robot is not None:
+        hydra_args.append(f"env.robot={args_cli.robot}")
     # Hand the leftover key=value tokens to Hydra via sys.argv.
     sys.argv = [sys.argv[0]] + hydra_args
 

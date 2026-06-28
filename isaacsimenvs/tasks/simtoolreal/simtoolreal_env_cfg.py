@@ -54,9 +54,6 @@ from isaaclab.utils import configclass
 
 @configclass
 class AssetsCfg:
-    robot_urdf: str = (
-        "assets/urdf/fr3_xhand_description/fr3_xhand/fr3_xhand.urdf"
-    )
     table_urdf: str = "assets/urdf/table_narrow.urdf"
     # Per-env scale ranges applied to the table mesh at scene-build time.
     # Sampled independently per env: sx ~ U(table_scale_range_x), sy ~ U(table_scale_range_y).
@@ -244,18 +241,6 @@ class StudentObsCfg:
         # `/visuals` group; multi-link URDFs (fabrica) match each link's
         # `/visuals` group independently, which is what we want.
         "/World/envs/env_.*/Object/.*/visuals",
-        # FR3 arm + XHand1 hand link visuals. Explicit prefixes (not a
-        # broad `/Robot/.*/visuals`) so the parser doesn't try to make
-        # rigid-body views for non-link prims like `/Robot/Looks` /
-        # `/Robot/joints` (those stall sensor init for several minutes
-        # with PhysX retries before timing out).
-        "/World/envs/env_.*/Robot/fr3_link.*/visuals",
-        "/World/envs/env_.*/Robot/palm/visuals",
-        "/World/envs/env_.*/Robot/thumb_.*/visuals",
-        "/World/envs/env_.*/Robot/index_.*/visuals",
-        "/World/envs/env_.*/Robot/mid_.*/visuals",
-        "/World/envs/env_.*/Robot/ring_.*/visuals",
-        "/World/envs/env_.*/Robot/pinky_.*/visuals",
     )
     # Rays that don't intersect any mesh return max_distance (instead of NaN)
     # when `depth_clipping_behavior == "max"`. Keep at the rasterizer's default
@@ -547,6 +532,8 @@ class SimToolRealEnvCfg(DirectRLEnvCfg):
     Structure mirrors ``cfg/task/SimToolReal.yaml`` exactly — YAML overlay
     key paths resolve to these fields via ``configclass.from_dict``.
     """
+
+    robot: str = "fr3-xhand-adapter"
 
     # --- DirectRLEnvCfg required fields ---
     decimation: int = 2  # 2 physics substeps per policy step

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import math
-import os
 
 import torch
 
@@ -15,35 +14,9 @@ from isaaclab.utils.math import convert_quat, quat_apply, quat_from_angle_axis, 
 # ----------------------------------------------------------------------------
 
 
-NUM_JOINTS: int = 19  # FR3 (7) + XHand1 right (12)
 NUM_FINGERTIPS: int = 5
 NUM_KEYPOINTS: int = 4
 
-# Offset from `fr3_link7` (the wrist link the `palm` merged into) toward the
-# grasp center, ~0.16 m along the flange axis (analogous to the original iiwa
-# wrist offset). TODO(032): untuned for XHand1; refine against rendered frames.
-PALM_CENTER_OFFSET: tuple[float, float, float] = (0.0, 0.0, 0.16)
-
-# Fingertip-reward geometry. 009-pd-reward-sweep crosses this with the hand PD.
-# distal (current): the *_link2 distal-phalanx origin, offset (0,0,0).
-# pad: XHand's own fingertip pads, the per-finger *_joint3 origins from the
-# verified v1.3 URDF. merge_fixed_joints folds each fixed *_tip into its
-# *_link2 parent, so a constant local offset equals the true pad position
-# exactly. Keyed by body name so the order always matches
-# env._fingertip_body_names (== _fingertip_body_ids order). Selected by env
-# var, default distal == current behavior.
-FINGERTIP_OFFSET: tuple[float, float, float] = (0.0, 0.0, 0.0)
-FINGERTIP_PAD_OFFSET_BY_BODY: dict[str, tuple[float, float, float]] = {
-    "thumb_rota_link2": (0.0, 0.0502276499414863, 0.0),
-    "index_rota_link2": (0.0, 0.0, 0.0422482924089424),
-    "mid_link2": (0.0, 0.0, 0.042248),
-    "ring_link2": (0.0, 0.0, 0.0422482924089404),
-    "pinky_link2": (0.0, 0.0, 0.0422482924089405),
-}
-_FT_TARGET = os.environ.get("XHAND_FT_TARGET", "pad")
-assert _FT_TARGET in ("distal", "pad"), (
-    f"XHAND_FT_TARGET={_FT_TARGET!r} not in ('distal', 'pad')"
-)
 
 # Object-frame keypoint corners before scaling.
 KEYPOINT_CORNERS: tuple[tuple[int, int, int], ...] = (
@@ -54,9 +27,6 @@ KEYPOINT_CORNERS: tuple[tuple[int, int, int], ...] = (
 )
 
 OBS_FIELD_SIZES: dict[str, int] = {
-    "joint_pos": NUM_JOINTS,
-    "joint_vel": NUM_JOINTS,
-    "prev_action_targets": NUM_JOINTS,
     "palm_pos": 3,
     "palm_rot": 4,
     "palm_vel": 6,
@@ -75,9 +45,12 @@ OBS_FIELD_SIZES: dict[str, int] = {
 }
 
 
-def compute_obs_dim(field_list) -> int:
+_JOINT_SCALED_FIELDS = ("joint_pos", "joint_vel", "prev_action_targets")
+
+
+def compute_obs_dim(field_list, num_joints) -> int:
     """Return total tensor dim for an ordered list of obs field names."""
-    return sum(OBS_FIELD_SIZES[f] for f in field_list)
+    return sum(num_joints if f in _JOINT_SCALED_FIELDS else OBS_FIELD_SIZES[f] for f in field_list)
 
 
 def _stack_obs_dict(obs_dict: dict[str, torch.Tensor], field_list) -> torch.Tensor:
@@ -135,24 +108,13 @@ def _apply_local_offset(
 
 
 def _fingertip_offset(env, device, dtype):
-    """Per-finger local offset for the active fingertip-reward target.
-
-    distal -> shared (0,0,0). pad -> (5,3) ordered to env._fingertip_body_names
-    (== _fingertip_body_ids order). Built once and cached on the env.
-    """
+    """Per-finger local offset for the active fingertip-reward target."""
     cached = getattr(env, "_fingertip_offset_cached", None)
     if cached is not None and cached.device == device:
         return cached
-    if _FT_TARGET == "pad":
-        rows = []
-        for name in env._fingertip_body_names:
-            assert name in FINGERTIP_PAD_OFFSET_BY_BODY, (
-                f"no pad offset for fingertip body {name!r}"
-            )
-            rows.append(FINGERTIP_PAD_OFFSET_BY_BODY[name])
-        cached = torch.tensor(rows, device=device, dtype=dtype)  # (5, 3)
-    else:
-        cached = torch.as_tensor(FINGERTIP_OFFSET, device=device, dtype=dtype)
+    offsets = env.cfg.robot.fingertip_offset_by_body
+    rows = [offsets[name] for name in env._fingertip_body_names]
+    cached = torch.tensor(rows, device=device, dtype=dtype)
     env._fingertip_offset_cached = cached
     return cached
 
@@ -306,7 +268,7 @@ def build_observations(env) -> dict[str, torch.Tensor]:
     palm_vel = palm_state[:, 7:13]
 
     palm_center_pos_w = _apply_local_offset(
-        palm_pos_w, palm_rot, PALM_CENTER_OFFSET, (env.num_envs,)
+        palm_pos_w, palm_rot, env.cfg.robot.palm_center_offset, (env.num_envs,)
     )
     palm_pos = palm_center_pos_w - env_origins
 
@@ -526,7 +488,6 @@ def build_student_observations(env) -> dict[str, torch.Tensor]:
 
 
 __all__ = [
-    "NUM_JOINTS",
     "NUM_FINGERTIPS",
     "NUM_KEYPOINTS",
     "KEYPOINT_CORNERS",
