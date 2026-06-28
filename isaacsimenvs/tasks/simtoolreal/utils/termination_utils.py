@@ -69,7 +69,40 @@ def compute_terminations(env) -> tuple[torch.Tensor, torch.Tensor]:
         "hand_far": hand_far,
         "timeout": truncated,
     }
-    return terminated, truncated
+
+    if not env._stagger_enabled:
+        return terminated, truncated
+    return _staggered_gate(env, terminated, truncated)
+
+
+def _staggered_gate(env, terminated, truncated):
+    done = terminated | truncated
+    newly = done & ~env._stagger_waiting
+    env._stagger_waiting |= done
+    env._stagger_waiting_timeout[newly] = (truncated & ~terminated)[newly]
+
+    env._stagger_steps_since_gate += 1
+    out_terminated = torch.zeros_like(terminated)
+    out_truncated = torch.zeros_like(truncated)
+    if env._stagger_steps_since_gate < env._stagger_K:
+        return out_terminated, out_truncated
+
+    env._stagger_steps_since_gate = 0
+    waiting_ids = env._stagger_waiting.nonzero(as_tuple=False).squeeze(-1)
+    if waiting_ids.numel() > 0:
+        phase = env.episode_length_buf[waiting_ids]
+        is_timeout = env._stagger_waiting_timeout[waiting_ids]
+        big = env.max_episode_length + env._stagger_K + 1
+        order = torch.argsort(is_timeout.long() * big - phase)
+        selected = waiting_ids[order][: env._stagger_gate_capacity]
+        selected_timeout = env._stagger_waiting_timeout[selected]
+        out_truncated[selected[selected_timeout]] = True
+        out_terminated[selected[~selected_timeout]] = True
+        env._stagger_waiting[selected] = False
+
+    overflow = env._stagger_waiting & (env.episode_length_buf >= env.max_episode_length)
+    env.episode_length_buf[overflow] -= env.max_episode_length
+    return out_terminated, out_truncated
 
 
 __all__ = ["update_tolerance_curriculum", "compute_terminations"]

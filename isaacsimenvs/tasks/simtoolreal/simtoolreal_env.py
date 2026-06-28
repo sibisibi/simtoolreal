@@ -58,6 +58,9 @@ class SimToolRealEnv(DirectRLEnv):
             self,
             torch.as_tensor(env_ids, device=self.device, dtype=torch.long),
         )
+        if self._stagger_enabled and not self._stagger_init_done and len(env_ids) == self.num_envs:
+            self.episode_length_buf[:] = self._env_group * self._stagger_K
+            self._stagger_init_done = True
 
     def _pre_physics_step(self, actions: torch.Tensor) -> None:
         apply_action_pipeline(self, actions)

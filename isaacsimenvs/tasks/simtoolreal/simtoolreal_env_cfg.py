@@ -401,6 +401,9 @@ class ResetCfg:
     fixed_trajectory_file: str = ""
     fixed_trajectory_count: int = 0
 
+    staggered_resets: bool = False
+    staggered_rollout_length: int = 16
+
 
 # ----------------------------------------------------------------------------
 # termination (includes tolerance curriculum — governs success criterion)
