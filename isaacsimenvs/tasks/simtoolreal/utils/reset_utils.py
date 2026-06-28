@@ -192,15 +192,20 @@ def allocate_state_buffers(env) -> None:
     env._stagger_enabled = bool(env.cfg.reset.staggered_resets)
     if env._stagger_enabled:
         env._stagger_K = int(env.cfg.reset.staggered_rollout_length)
-        n_groups = (int(env.max_episode_length) + env._stagger_K - 1) // env._stagger_K
-        env._stagger_gate_capacity = (env.num_envs + n_groups - 1) // n_groups
+        h = int(env.max_episode_length)
+        n_groups = (h + env._stagger_K - 1) // env._stagger_K
+        env._stagger_gate_capacity = (env.num_envs * env._stagger_K + h - 1) // h
         env._env_group = torch.arange(env.num_envs, device=env.device) % n_groups
         env._stagger_steps_since_gate = 0
+        env._stagger_step = 0
         env._stagger_waiting = torch.zeros(
             env.num_envs, dtype=torch.bool, device=env.device
         )
         env._stagger_waiting_timeout = torch.zeros(
             env.num_envs, dtype=torch.bool, device=env.device
+        )
+        env._stagger_enqueue = torch.zeros(
+            env.num_envs, dtype=torch.long, device=env.device
         )
         env._stagger_init_done = False
 
