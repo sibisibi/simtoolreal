@@ -1616,19 +1616,20 @@ def setup_scene(env) -> None:
 
     robot_converted_usd = _convert_urdf_to_usd(
         env.cfg.robot.urdf, usd_work_dir,
-        fix_base=True, self_collision=True,
+        fix_base=True, self_collision=env.cfg.robot.self_collision,
         joint_drive=_robot_joint_drive_cfg(),
     )
     # Isaac Gym enables all robot self-collisions then masks adjacent links; mirror
     # that by authoring FilteredPairsAPI for the adjacent_links.py pairs before the
     # bake (PhysX additionally auto-filters directly-jointed parent/child links).
-    _apply_self_collision_filters(robot_converted_usd)
+    if env.cfg.robot.self_collision:
+        _apply_self_collision_filters(robot_converted_usd)
     robot_usd_path = _bake_usd(
         robot_converted_usd,
         bake_root, "robot",
         props=dict(
             disable_gravity=True, max_depenetration_velocity=1000.0,
-            enabled_self_collisions=True,
+            enabled_self_collisions=env.cfg.robot.self_collision,
             solver_position_iterations=8, solver_velocity_iterations=0,
         ),
         apply_physx_articulation=True,

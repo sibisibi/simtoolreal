@@ -23,6 +23,7 @@ class RobotCfg:
     palm_center_offset: tuple[float, float, float] = MISSING
     fingertip_offset_by_body: dict[str, tuple[float, float, float]] = MISSING
     raycast_link_exprs: tuple[str, ...] = MISSING
+    self_collision: bool = True
 
 
 _FR3_XHAND_HAND_JOINTS = (
@@ -39,6 +40,7 @@ _FR3_XHAND_FINGERTIP_BODIES = (
 )
 
 _FR3_XHAND_SHARED = dict(
+    self_collision=False,
     arm_joint_regex="fr3_joint.*",
     hand_joint_regex="(thumb|index|middle|ring|pinky)_joint.*",
     joint_order=(
