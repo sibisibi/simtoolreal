@@ -69,11 +69,9 @@ def _check_url(url: str, url_check: str) -> None:
         print(message, flush=True)
 
 
-def _raw_url_for_repo_path(path: Path, raw_base: str) -> str | None:
-    try:
-        rel = path.resolve().relative_to(REPO_ROOT)
-    except ValueError:
-        return None
+def _raw_url_for_repo_path(path: Path, raw_base: str) -> str:
+    parts = path.resolve().parts
+    rel = Path(*parts[parts.index("assets"):])
     return raw_base + quote(rel.as_posix(), safe="/")
 
 
@@ -110,10 +108,7 @@ def _rewrite_embedded_urdf_mesh_urls(
             else:
                 mesh_path = source_urdf_path.parent / filename
 
-        mesh_url = _raw_url_for_repo_path(mesh_path, raw_base)
-        if mesh_url is None:
-            continue
-        mesh_elem.set("filename", mesh_url)
+        mesh_elem.set("filename", _raw_url_for_repo_path(mesh_path, raw_base))
         changed = True
 
     if not changed:
