@@ -1193,6 +1193,7 @@ def _load_adjacent_links_map() -> dict[str, list[str]]:
     for src in (
         mod.LEFT_SHARPA_KUKA_LINK_TO_ADJACENT_LINKS,
         mod.RIGHT_SHARPA_KUKA_LINK_TO_ADJACENT_LINKS,
+        mod.FR3_XHAND_LINK_TO_ADJACENT_LINKS,
     ):
         for link, neighbors in src.items():
             merged.setdefault(link, [])

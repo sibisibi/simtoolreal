@@ -40,7 +40,7 @@ _FR3_XHAND_FINGERTIP_BODIES = (
 )
 
 _FR3_XHAND_SHARED = dict(
-    self_collision=False,
+    self_collision=True,
     arm_joint_regex="fr3_joint.*",
     hand_joint_regex="(thumb|index|middle|ring|pinky)_joint.*",
     joint_order=(

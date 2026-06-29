@@ -86,3 +86,34 @@ LEFT_SHARPA_KUKA_LINK_TO_ADJACENT_LINKS = {
     "left_thumb_PP": ["left_thumb_MC", "left_thumb_MCP_VL", "left_thumb_DP"],
     "left_thumb_DP": ["left_thumb_PP"],
 }
+
+
+FR3_XHAND_LINK_TO_ADJACENT_LINKS = {
+    "fr3_link0": ["fr3_link1"],
+    "fr3_link1": ["fr3_link0", "fr3_link2"],
+    "fr3_link2": ["fr3_link1", "fr3_link3"],
+    "fr3_link3": ["fr3_link2", "fr3_link4"],
+    "fr3_link4": ["fr3_link3", "fr3_link5"],
+    "fr3_link5": ["fr3_link4", "fr3_link6"],
+    "fr3_link6": ["fr3_link5", "fr3_link7"],
+    "fr3_link7": [
+        "fr3_link6",
+        "thumb_bend_link",
+        "index_bend_link",
+        "mid_link1",
+        "ring_link1",
+        "pinky_link1",
+    ],
+    "thumb_bend_link": ["fr3_link7", "thumb_rota_link1"],
+    "thumb_rota_link1": ["thumb_bend_link", "thumb_rota_link2"],
+    "thumb_rota_link2": ["thumb_rota_link1"],
+    "index_bend_link": ["fr3_link7", "index_rota_link1"],
+    "index_rota_link1": ["index_bend_link", "index_rota_link2"],
+    "index_rota_link2": ["index_rota_link1"],
+    "mid_link1": ["fr3_link7", "mid_link2"],
+    "mid_link2": ["mid_link1"],
+    "ring_link1": ["fr3_link7", "ring_link2"],
+    "ring_link2": ["ring_link1"],
+    "pinky_link1": ["fr3_link7", "pinky_link2"],
+    "pinky_link2": ["pinky_link1"],
+}
