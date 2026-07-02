@@ -171,8 +171,13 @@ ROBOT_PROFILES: dict[str, RobotCfg] = {
         urdf="assets/urdf/fr3_xhand_description/fr3_xhand/fr3_xhand.urdf",
         **_FR3_XHAND_SHARED,
     ),
-    "fr3-xhand": RobotCfg(
-        urdf="assets/urdf/fr3_xhand_description/fr3_xhand/fr3_xhand_noadapter.urdf",
+    "fr3-xhand": RobotCfg(**{
         **_FR3_XHAND_SHARED,
-    ),
+        "urdf": "assets/urdf/fr3_xhand_description/fr3_xhand/fr3_xhand_noadapter.urdf",
+        "arm_default_pos": {
+            "fr3_joint1": 0.0, "fr3_joint2": 0.0, "fr3_joint3": 0.0,
+            "fr3_joint4": -2.35619, "fr3_joint5": 0.0, "fr3_joint6": 3.92699,
+            "fr3_joint7": -0.78540,
+        },
+    }),
 }
