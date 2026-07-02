@@ -1087,7 +1087,7 @@
   </joint>
   <link name="adapter_link">
     <visual>
-      <origin xyz="0 0 -0.0065" rpy="0 0 0" />
+      <origin xyz="0 0 -0.03" rpy="0 0 0" />
       <geometry>
         <mesh filename="../adapter/robotera_adapter.stl" />
       </geometry>
