@@ -24,6 +24,7 @@ class RobotCfg:
     fingertip_offset_by_body: dict[str, tuple[float, float, float]] = MISSING
     raycast_link_exprs: tuple[str, ...] = MISSING
     self_collision: bool = True
+    base_quat_wxyz: tuple[float, float, float, float] = (1.0, 0.0, 0.0, 0.0)
 
 
 _FR3_XHAND_HAND_JOINTS = (
@@ -41,6 +42,7 @@ _FR3_XHAND_FINGERTIP_BODIES = (
 
 _FR3_XHAND_SHARED = dict(
     self_collision=True,
+    base_quat_wxyz=(0.70710678, 0.0, 0.0, -0.70710678),
     arm_joint_regex="fr3_joint.*",
     hand_joint_regex="(thumb|index|middle|ring|pinky)_joint.*",
     joint_order=(

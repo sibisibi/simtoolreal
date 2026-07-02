@@ -57,7 +57,7 @@ def build_robot_articulation_usd_cfg(
         spawn=UsdFileCfg(usd_path=usd_path),
         init_state=ArticulationCfg.InitialStateCfg(
             pos=(0.0, 0.8, 0.0),
-            rot=(1.0, 0.0, 0.0, 0.0),
+            rot=tuple(float(x) for x in robot.base_quat_wxyz),
             joint_pos={
                 **arm_default,
                 **{name: 0.0 for name in robot.hand_stiffness},
