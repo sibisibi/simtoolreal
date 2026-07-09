@@ -889,7 +889,7 @@
     <child link="fr3_link8" />
   </joint>
 
-<joint name="hand_mount" type="fixed"><parent link="fr3_link8" /><child link="palm" /><origin xyz="-0.017 -0.017 0.051" rpy="-3.1416 -1.5708 0.7854" /></joint><joint name="ee_joint" type="fixed">
+<joint name="hand_mount" type="fixed"><parent link="fr3_link8" /><child link="palm" /><origin xyz="-0.02616295 -0.02616295 0.042" rpy="-3.1416 -1.5708 0.7854" /></joint><joint name="ee_joint" type="fixed">
     <origin xyz="0 0 0.065" rpy="0 0 0" />
     <parent link="palm" />
     <child link="ee_link" />
