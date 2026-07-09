@@ -401,6 +401,14 @@ class ResetCfg:
     fixed_trajectory_file: str = ""
     fixed_trajectory_count: int = 0
 
+    # OmniReset-style reset mix (session 015). Fraction of full resets drawn
+    # from the near-object bank, object resting on the table with the hand at
+    # a BODex pregrasp. 0.0 keeps default resets only. The bank npz carries
+    # qpos (A, K, J), objpose (A, K, 7) env-local with z relative to the table
+    # top and quat wxyz, count (A,), joint_names (J,), keyed by asset index.
+    near_object_fraction: float = 0.0
+    reset_bank_path: str = ""
+
 
 # ----------------------------------------------------------------------------
 # termination (includes tolerance curriculum — governs success criterion)

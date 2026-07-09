@@ -120,6 +120,9 @@ reset:
   target_volume_maxs: [0.35, 0.2, 0.95]
   target_volume_region_scale: 1.0
 
+  near_object_fraction: 0.0
+  reset_bank_path: ""
+
 # -----------------------------------------------------------------------------
 # 7) termination — end-of-episode conditions + tolerance curriculum
 # -----------------------------------------------------------------------------

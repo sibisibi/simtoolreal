@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import numpy as np
 import torch
 
 from isaaclab.utils.math import random_orientation
@@ -374,13 +375,64 @@ def reset_goal_trackers(env, env_ids: torch.Tensor) -> None:
     _reset_goal_pose(env, env_ids, mode=env.cfg.reset.goal_sampling_type)
 
 
+def _load_near_object_bank(env) -> None:
+    """Load the 015 near-object reset bank and reorder joints to sim order."""
+    bank = np.load(env.cfg.reset.reset_bank_path, allow_pickle=False)
+    names = [str(n) for n in bank["joint_names"]]
+    order = torch.tensor([names.index(n) for n in env.robot.data.joint_names], dtype=torch.long)
+    env._nearobj_qpos = torch.as_tensor(bank["qpos"], dtype=torch.float32)[:, :, order].to(env.device)
+    env._nearobj_objpose = torch.as_tensor(bank["objpose"], dtype=torch.float32).to(env.device)
+    env._nearobj_count = torch.as_tensor(bank["count"], dtype=torch.long).to(env.device)
+    n_assets = int(env._object_asset_index_per_env.max().item()) + 1
+    assert env._nearobj_qpos.shape[0] >= n_assets, (env._nearobj_qpos.shape, n_assets)
+    assert int(env._nearobj_count.sum().item()) > 0
+
+
+def _split_near_object(env, env_ids: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    """Split resetting envs into (near-object, default) by the configured fraction."""
+    frac = env.cfg.reset.near_object_fraction
+    if frac <= 0.0:
+        return env_ids.new_empty(0), env_ids
+    if not hasattr(env, "_nearobj_qpos"):
+        _load_near_object_bank(env)
+    draw = torch.rand(env_ids.numel(), device=env.device) < frac
+    has_rows = env._nearobj_count[env._object_asset_index_per_env[env_ids]] > 0
+    pick = draw & has_rows
+    return env_ids[pick], env_ids[~pick]
+
+
+def _reset_near_object_state(env, env_ids: torch.Tensor) -> None:
+    """Reset to a bank state, object resting on the table, hand at a pregrasp."""
+    n = env_ids.numel()
+    asset = env._object_asset_index_per_env[env_ids]
+    row = (torch.rand(n, device=env.device) * env._nearobj_count[asset].to(torch.float32)).long()
+    joint_pos = env._nearobj_qpos[asset, row]
+    lower = env.robot.data.joint_pos_limits[env_ids, :, 0]
+    upper = env.robot.data.joint_pos_limits[env_ids, :, 1]
+    joint_pos = joint_pos.clamp(lower, upper)
+    env.robot.write_joint_state_to_sim(joint_pos, torch.zeros_like(joint_pos), env_ids=env_ids)
+    env._prev_targets[env_ids] = joint_pos
+    env._cur_targets[env_ids] = joint_pos
+
+    objpose = env._nearobj_objpose[asset, row].clone()
+    objpose[:, 2] += env._table_z_per_env[env_ids]
+    pose = torch.cat([objpose[:, :3] + env.scene.env_origins[env_ids], objpose[:, 3:7]], dim=-1)
+    env.object.write_root_pose_to_sim(pose, env_ids=env_ids)
+    env.object.write_root_velocity_to_sim(torch.zeros(n, 6, device=env.device), env_ids=env_ids)
+    env._object_init_z[env_ids] = objpose[:, 2]
+
+
 def reset_env_state(env, env_ids: torch.Tensor) -> None:
     """Full per-env reset after ``super()._reset_idx``."""
     n = env_ids.numel()
 
-    _randomize_robot_dof_state(env, env_ids)
+    nearobj_ids, default_ids = _split_near_object(env, env_ids)
     _reset_table_pose(env, env_ids)
-    _reset_object_pose(env, env_ids)
+    if default_ids.numel() > 0:
+        _randomize_robot_dof_state(env, default_ids)
+        _reset_object_pose(env, default_ids)
+    if nearobj_ids.numel() > 0:
+        _reset_near_object_state(env, nearobj_ids)
     _reset_goal_pose(env, env_ids, mode="absolute")  # full reset → always absolute
 
     env._prev_episode_successes[env_ids] = env._successes[env_ids]
