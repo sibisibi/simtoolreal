@@ -151,7 +151,7 @@
     </inertial>
   </link>
 
-  <link name="fr3_link8"><visual><geometry><mesh filename="meshes/bracket_plate.obj" /></geometry><material name="bracket_black_plate"><color rgba="0.1 0.1 0.1 1" /></material></visual><visual><geometry><mesh filename="meshes/bracket_base.obj" /></geometry><material name="bracket_black_base"><color rgba="0.1 0.1 0.1 1" /></material></visual></link>
+  <link name="fr3_link8"><visual><geometry><mesh filename="meshes/bracket_plate.stl" /></geometry><material name="bracket_black_plate"><color rgba="0.1 0.1 0.1 1" /></material></visual><visual><geometry><mesh filename="meshes/bracket_base.stl" /></geometry><material name="bracket_black_base"><color rgba="0.1 0.1 0.1 1" /></material></visual></link>
 
   <link name="palm">
     <inertial>
