@@ -69,12 +69,25 @@ def _check_url(url: str, url_check: str) -> None:
         print(message, flush=True)
 
 
+# The asset tree is shared by the main checkout and worktrees, and legacy mesh
+# filenames are absolute under either NAS alias. Try every known root so media
+# built from a worktree still rewrites to raw URLs.
+_REPO_ROOT_ALIASES = (
+    REPO_ROOT,
+    Path("/home/nas5/sibeenkim/work/simtoolreal"),
+    Path("/home/nas_main/sibeenkim/work/simtoolreal"),
+)
+
+
 def _raw_url_for_repo_path(path: Path, raw_base: str) -> str | None:
-    try:
-        rel = path.resolve().relative_to(REPO_ROOT)
-    except ValueError:
-        return None
-    return raw_base + quote(rel.as_posix(), safe="/")
+    resolved = path.resolve()
+    for root in _REPO_ROOT_ALIASES:
+        try:
+            rel = resolved.relative_to(root.resolve())
+        except ValueError:
+            continue
+        return raw_base + quote(rel.as_posix(), safe="/")
+    return None
 
 
 def _rewrite_embedded_urdf_mesh_urls(
