@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from collections import deque
 from pathlib import Path
 
 import numpy as np
@@ -13,6 +14,8 @@ from isaaclab.utils.math import random_orientation
 from .action_utils import sample_log_uniform
 from .goal_sampling import sample_absolute_goal_pose, sample_delta_goal_pose
 from .obs_utils import KEYPOINT_CORNERS, NUM_FINGERTIPS
+
+RESET_MODE_NAMES = {0: "default", 1: "near_object"}
 
 def allocate_state_buffers(env) -> None:
     """Populate every per-env buffer + index cache used by the hooks.
@@ -122,6 +125,14 @@ def allocate_state_buffers(env) -> None:
     env._table_z_per_env = torch.full(
         (env.num_envs,), env.cfg.reset.table_reset_z, device=env.device
     )
+
+    # --- Per-env reset-mode tag + windowed per-mode episode successes (019) ---
+    env._reset_mode_per_env = torch.zeros(
+        env.num_envs, dtype=torch.long, device=env.device
+    )
+    env._mode_success_windows = {
+        mode: deque(maxlen=2048) for mode in RESET_MODE_NAMES
+    }
 
     # --- DR rolling buffers ---
     env._object_state_queue = torch.zeros(
@@ -419,12 +430,29 @@ def _reset_near_object_state(env, env_ids: torch.Tensor) -> None:
     pose = torch.cat([objpose[:, :3] + env.scene.env_origins[env_ids], objpose[:, 3:7]], dim=-1)
     env.object.write_root_pose_to_sim(pose, env_ids=env_ids)
     env.object.write_root_velocity_to_sim(torch.zeros(n, 6, device=env.device), env_ids=env_ids)
-    env._object_init_z[env_ids] = objpose[:, 2]
+    # 019: init_z matched to the default drop path so shaping and latch
+    # thresholds are identically distributed across reset modes.
+    cfg = env.cfg.reset
+    noise_z = (
+        torch.empty(n, device=env.device).uniform_(-1.0, 1.0)
+        * cfg.reset_position_noise_z
+    )
+    env._object_init_z[env_ids] = (
+        env._table_z_per_env[env_ids] + cfg.table_object_z_offset + noise_z
+    )
 
 
 def reset_env_state(env, env_ids: torch.Tensor) -> None:
     """Full per-env reset after ``super()._reset_idx``."""
     n = env_ids.numel()
+
+    # Bank the finished episodes' successes under the mode they ran with (019).
+    finished = env._successes[env_ids].detach().cpu()
+    old_mode = env._reset_mode_per_env[env_ids].detach().cpu()
+    for mode in RESET_MODE_NAMES:
+        picked = finished[old_mode == mode]
+        if picked.numel():
+            env._mode_success_windows[mode].extend(picked.tolist())
 
     nearobj_ids, default_ids = _split_near_object(env, env_ids)
     _reset_table_pose(env, env_ids)
@@ -433,6 +461,8 @@ def reset_env_state(env, env_ids: torch.Tensor) -> None:
         _reset_object_pose(env, default_ids)
     if nearobj_ids.numel() > 0:
         _reset_near_object_state(env, nearobj_ids)
+    env._reset_mode_per_env[env_ids] = 0
+    env._reset_mode_per_env[nearobj_ids] = 1
     _reset_goal_pose(env, env_ids, mode="absolute")  # full reset → always absolute
 
     env._prev_episode_successes[env_ids] = env._successes[env_ids]

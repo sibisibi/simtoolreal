@@ -29,5 +29,32 @@ def log_step_metrics(env) -> None:
     env.extras["successes"] = env._prev_episode_successes.float()
     env.extras["current_success_tolerance"] = float(env._current_success_tolerance)
 
+    # Per-reset-mode channels (019). Scalars flow through direct_info.
+    from .reset_utils import RESET_MODE_NAMES
+
+    names: list[str] = []
+    values: list[torch.Tensor] = []
+    for mode, mode_name in RESET_MODE_NAMES.items():
+        mask = env._reset_mode_per_env == mode
+        names.append(f"reset_mode/env_frac_{mode_name}")
+        values.append(mask.float().mean())
+        if bool(mask.any()):
+            for term in (
+                "lifting_rew", "lift_bonus_rew", "keypoint_rew",
+                "bonus_rew", "total_reward",
+            ):
+                names.append(f"reset_mode/{term}_{mode_name}")
+                values.append(env._reward_terms[term][mask].mean())
+            names.append(f"reset_mode/lifted_frac_{mode_name}")
+            values.append(env._lifted_object[mask].float().mean())
+    for name, value in zip(names, torch.stack(values).detach().cpu().tolist()):
+        env.extras[name] = float(value)
+    for mode, mode_name in RESET_MODE_NAMES.items():
+        window = env._mode_success_windows[mode]
+        if window:
+            env.extras[f"reset_mode/successes_{mode_name}"] = (
+                float(sum(window)) / len(window)
+            )
+
 
 __all__ = ["log_step_metrics"]
