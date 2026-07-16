@@ -15,7 +15,7 @@ from .action_utils import sample_log_uniform
 from .goal_sampling import sample_absolute_goal_pose, sample_delta_goal_pose
 from .obs_utils import KEYPOINT_CORNERS, NUM_FINGERTIPS
 
-RESET_MODE_NAMES = {0: "default", 1: "near_object"}
+RESET_MODE_NAMES = {0: "default", 1: "near_object", 2: "grasped_air", 3: "grasped_goal"}
 
 def allocate_state_buffers(env) -> None:
     """Populate every per-env buffer + index cache used by the hooks.
@@ -399,17 +399,55 @@ def _load_near_object_bank(env) -> None:
     assert int(env._nearobj_count.sum().item()) > 0
 
 
-def _split_near_object(env, env_ids: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-    """Split resetting envs into (near-object, default) by the configured fraction."""
-    frac = env.cfg.reset.near_object_fraction
-    if frac <= 0.0:
-        return env_ids.new_empty(0), env_ids
-    if not hasattr(env, "_nearobj_qpos"):
+def _load_grasped_bank(env) -> None:
+    """Load the 019 grasped bank. objpose_abs is env-local ABSOLUTE z."""
+    bank = np.load(env.cfg.reset.grasped_bank_path, allow_pickle=False)
+    names = [str(n) for n in bank["joint_names"]]
+    order = torch.tensor([names.index(n) for n in env.robot.data.joint_names], dtype=torch.long)
+    env._grasped_qpos = torch.as_tensor(bank["qpos"], dtype=torch.float32)[:, :, order].to(env.device)
+    env._grasped_qtarget = torch.as_tensor(bank["qtarget"], dtype=torch.float32)[:, :, order].to(env.device)
+    env._grasped_objpose = torch.as_tensor(bank["objpose_abs"], dtype=torch.float32).to(env.device)
+    env._grasped_count = torch.as_tensor(bank["count"], dtype=torch.long).to(env.device)
+    n_assets = int(env._object_asset_index_per_env.max().item()) + 1
+    assert env._grasped_qpos.shape[0] >= n_assets, (env._grasped_qpos.shape, n_assets)
+    assert int(env._grasped_count.sum().item()) > 0
+
+
+def _split_reset_modes(
+    env, env_ids: torch.Tensor
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Split resetting envs into (near-object, grasped-air, grasped-goal, default).
+
+    Envs whose asset has no rows in the required bank fall back to default.
+    """
+    cfg = env.cfg.reset
+    f_no = cfg.near_object_fraction
+    f_ga = cfg.grasped_air_fraction
+    f_gg = cfg.grasped_goal_fraction
+    if f_no + f_ga + f_gg <= 0.0:
+        e = env_ids.new_empty(0)
+        return e, e, e, env_ids
+    assert f_no + f_ga + f_gg <= 1.0 + 1e-6, (f_no, f_ga, f_gg)
+    if f_no > 0.0 and not hasattr(env, "_nearobj_qpos"):
         _load_near_object_bank(env)
-    draw = torch.rand(env_ids.numel(), device=env.device) < frac
-    has_rows = env._nearobj_count[env._object_asset_index_per_env[env_ids]] > 0
-    pick = draw & has_rows
-    return env_ids[pick], env_ids[~pick]
+    if (f_ga > 0.0 or f_gg > 0.0) and not hasattr(env, "_grasped_qpos"):
+        assert not cfg.fixed_trajectory_file, (
+            "grasped resets are incompatible with the fixed-trajectory pool"
+        )
+        _load_grasped_bank(env)
+    u = torch.rand(env_ids.numel(), device=env.device)
+    asset = env._object_asset_index_per_env[env_ids]
+    pick_no = u < f_no
+    pick_ga = (u >= f_no) & (u < f_no + f_ga)
+    pick_gg = (u >= f_no + f_ga) & (u < f_no + f_ga + f_gg)
+    if f_no > 0.0:
+        pick_no &= env._nearobj_count[asset] > 0
+    if f_ga > 0.0 or f_gg > 0.0:
+        has_g = env._grasped_count[asset] > 0
+        pick_ga &= has_g
+        pick_gg &= has_g
+    default = ~(pick_no | pick_ga | pick_gg)
+    return env_ids[pick_no], env_ids[pick_ga], env_ids[pick_gg], env_ids[default]
 
 
 def _reset_near_object_state(env, env_ids: torch.Tensor) -> None:
@@ -442,6 +480,59 @@ def _reset_near_object_state(env, env_ids: torch.Tensor) -> None:
     )
 
 
+def _reset_grasped_state(env, env_ids: torch.Tensor) -> torch.Tensor:
+    """Reset to a validated in-hand state, object in the air, hand holding it.
+
+    Returns the env-local object pose written, the grasped-at-goal path
+    samples its episode goal from it. _lifted_object pre-latching happens in
+    reset_env_state after the tracker clear.
+    """
+    n = env_ids.numel()
+    asset = env._object_asset_index_per_env[env_ids]
+    row = (torch.rand(n, device=env.device) * env._grasped_count[asset].to(torch.float32)).long()
+    joint_pos = env._grasped_qpos[asset, row]
+    joint_target = env._grasped_qtarget[asset, row]
+    lower = env.robot.data.joint_pos_limits[env_ids, :, 0]
+    upper = env.robot.data.joint_pos_limits[env_ids, :, 1]
+    joint_pos = joint_pos.clamp(lower, upper)
+    joint_target = joint_target.clamp(lower, upper)
+    env.robot.write_joint_state_to_sim(joint_pos, torch.zeros_like(joint_pos), env_ids=env_ids)
+    env._prev_targets[env_ids] = joint_target
+    env._cur_targets[env_ids] = joint_target
+
+    objpose = env._grasped_objpose[asset, row].clone()
+    pose = torch.cat([objpose[:, :3] + env.scene.env_origins[env_ids], objpose[:, 3:7]], dim=-1)
+    env.object.write_root_pose_to_sim(pose, env_ids=env_ids)
+    env.object.write_root_velocity_to_sim(torch.zeros(n, 6, device=env.device), env_ids=env_ids)
+
+    # 019: init_z uses the matched default expression, same as every mode.
+    cfg = env.cfg.reset
+    noise_z = (
+        torch.empty(n, device=env.device).uniform_(-1.0, 1.0)
+        * cfg.reset_position_noise_z
+    )
+    env._object_init_z[env_ids] = (
+        env._table_z_per_env[env_ids] + cfg.table_object_z_offset + noise_z
+    )
+    return objpose
+
+
+def _reset_goal_from_object(env, env_ids: torch.Tensor, objpose_local: torch.Tensor) -> None:
+    """Grasped-at-goal, the episode goal is one delta step from the object."""
+    cfg = env.cfg.reset
+    new_pos, new_quat = sample_delta_goal_pose(
+        prev_pos=objpose_local[:, :3],
+        prev_quat_wxyz=objpose_local[:, 3:7],
+        delta_distance=cfg.delta_goal_distance,
+        delta_rotation_degrees=cfg.delta_rotation_degrees,
+        mins=cfg.target_volume_mins,
+        maxs=cfg.target_volume_maxs,
+        scale=cfg.target_volume_region_scale,
+    )
+    pose = torch.cat([new_pos + env.scene.env_origins[env_ids], new_quat], dim=-1)
+    env.goal_viz.write_root_pose_to_sim(pose, env_ids=env_ids)
+
+
 def reset_env_state(env, env_ids: torch.Tensor) -> None:
     """Full per-env reset after ``super()._reset_idx``."""
     n = env_ids.numel()
@@ -454,21 +545,34 @@ def reset_env_state(env, env_ids: torch.Tensor) -> None:
         if picked.numel():
             env._mode_success_windows[mode].extend(picked.tolist())
 
-    nearobj_ids, default_ids = _split_near_object(env, env_ids)
+    nearobj_ids, gair_ids, ggoal_ids, default_ids = _split_reset_modes(env, env_ids)
     _reset_table_pose(env, env_ids)
     if default_ids.numel() > 0:
         _randomize_robot_dof_state(env, default_ids)
         _reset_object_pose(env, default_ids)
     if nearobj_ids.numel() > 0:
         _reset_near_object_state(env, nearobj_ids)
+    if gair_ids.numel() > 0:
+        _reset_grasped_state(env, gair_ids)
+    ggoal_pose_local = None
+    if ggoal_ids.numel() > 0:
+        ggoal_pose_local = _reset_grasped_state(env, ggoal_ids)
     env._reset_mode_per_env[env_ids] = 0
     env._reset_mode_per_env[nearobj_ids] = 1
+    env._reset_mode_per_env[gair_ids] = 2
+    env._reset_mode_per_env[ggoal_ids] = 3
     _reset_goal_pose(env, env_ids, mode="absolute")  # full reset → always absolute
+    if ggoal_ids.numel() > 0:
+        _reset_goal_from_object(env, ggoal_ids, ggoal_pose_local)
 
     env._prev_episode_successes[env_ids] = env._successes[env_ids]
 
     _clear_goal_trackers(env, env_ids)
     env._lifted_object[env_ids] = False
+    # Grasped resets begin already holding the object, pre-latch so the
+    # one-shot lift bonus cannot fire and keypoint progress pays from step 0.
+    env._lifted_object[gair_ids] = True
+    env._lifted_object[ggoal_ids] = True
     env._successes[env_ids] = 0
 
     env._action_queue[env_ids] = 0.0

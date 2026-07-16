@@ -409,6 +409,12 @@ class ResetCfg:
     near_object_fraction: float = 0.0
     reset_bank_path: str = ""
 
+    # 019 grasped reset modes, one validated in-hand bank, two object-pose
+    # samplers. objpose_abs in the grasped bank is env-local ABSOLUTE z.
+    grasped_air_fraction: float = 0.0
+    grasped_goal_fraction: float = 0.0
+    grasped_bank_path: str = ""
+
 
 # ----------------------------------------------------------------------------
 # termination (includes tolerance curriculum — governs success criterion)
@@ -431,6 +437,9 @@ class TerminationCfg:
     success_tolerance: float = 0.075  # curriculum start
     target_success_tolerance: float = 0.01  # curriculum floor
     eval_success_tolerance: float | None = None
+    # 019: advance the tolerance curriculum on default-mode (full-task)
+    # episodes only, so mixed-reset arms keep the control's semantics.
+    curriculum_default_mode_only: bool = False
 
     success_steps: int = 10
     max_consecutive_successes: int = 50

@@ -72,6 +72,11 @@ class SimToolRealEnv(DirectRLEnv):
         compute_intermediate_values(self)
         return compute_terminations(self)
 
+    def _curriculum_eligible_mask(self):
+        if not self.cfg.termination.curriculum_default_mode_only:
+            return None
+        return self._reset_mode_per_env == 0
+
     def _get_rewards(self) -> torch.Tensor:
         reward = compute_rewards(self)
         log_step_metrics(self)
