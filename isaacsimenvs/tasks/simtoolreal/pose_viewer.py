@@ -7,6 +7,7 @@ Three.js/URDF HTML viewer that can be opened locally or logged to WandB.
 
 from __future__ import annotations
 
+import random
 import time
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -307,18 +308,13 @@ class SimToolRealPoseViewerWrapper(gym.Wrapper):
         self.output_dir = Path(output_dir)
         self.capture_len = int(capture_len)
         self.capture_interval = int(capture_interval)
-        self.env_id = int(env_id)
         self.wandb_key = wandb_key
         self.github_raw_base = github_raw_base
         self.url_check = url_check
         self._robot_urdf_rel = inner.cfg.robot.urdf
-        self._object_urdf_text, self._object_urdf_path = object_urdf_for_env(
-            inner, self.env_id
-        )
-        self._table_urdf_text, self._table_urdf_path = table_urdf_for_env(
-            inner, self.env_id
-        )
-        self._hole_urdf_text, self._hole_urdf_path = hole_urdf_for_env(inner, self.env_id)
+        # separate RNG so viewer env sampling never touches the training seed
+        self._env_rng = random.Random(0xD3C4D)
+        self._bind_env(self._env_rng.randrange(inner.num_envs))
 
         self._step = 0
         self._capture_index = 0
@@ -339,11 +335,24 @@ class SimToolRealPoseViewerWrapper(gym.Wrapper):
             flush=True,
         )
 
+    def _bind_env(self, env_id: int) -> None:
+        """Bind the per-env constants, at construction and at each capture window start."""
+        inner = self.env.unwrapped
+        self.env_id = int(env_id)
+        self._object_urdf_text, self._object_urdf_path = object_urdf_for_env(
+            inner, self.env_id
+        )
+        self._table_urdf_text, self._table_urdf_path = table_urdf_for_env(
+            inner, self.env_id
+        )
+        self._hole_urdf_text, self._hole_urdf_path = hole_urdf_for_env(inner, self.env_id)
+
     def step(self, action):
         result = self.env.step(action)
         self._step += 1
 
         if self._frames is None and self.capture_interval > 0 and self._step % self.capture_interval == 0:
+            self._bind_env(self._env_rng.randrange(self.env.unwrapped.num_envs))
             self._frames = []
             self._depth_frames = []
             self._depth_frames_clean = []
@@ -412,7 +421,7 @@ class SimToolRealPoseViewerWrapper(gym.Wrapper):
             return
 
         suffix = "partial" if partial else f"step_{self._step:09d}"
-        html_path = self.output_dir / f"pose_viewer_{suffix}_{self._capture_index:04d}.html"
+        html_path = self.output_dir / f"pose_viewer_{suffix}_env{self.env_id:05d}_{self._capture_index:04d}.html"
         html_text = build_pose_viewer_html(
             frames=frames,
             robot_urdf_rel=self._robot_urdf_rel,
@@ -444,8 +453,9 @@ class SimToolRealPoseViewerWrapper(gym.Wrapper):
             return
 
         try:
-            wandb.log({self.wandb_key: wandb.Html(html_text)})
-            print(f"[pose_viewer] logged WandB Html key={self.wandb_key} step={self._step}", flush=True)
+            wandb.log({self.wandb_key: wandb.Html(html_text), "pose_viewer/env_id": self.env_id})
+            wandb.run.summary["interactive_viewer_latest"] = wandb.Html(html_text)
+            print(f"[pose_viewer] logged WandB Html key={self.wandb_key} step={self._step} env={self.env_id}", flush=True)
         except Exception as exc:
             print(f"[pose_viewer] WandB log failed: {exc}", flush=True)
 
