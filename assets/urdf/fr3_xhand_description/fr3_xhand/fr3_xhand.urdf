@@ -1,13 +1,13 @@
 <robot name="fr3_xhand"><link name="fr3_link0">
     <visual>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/visual/link0.stl" />
+        <mesh filename="../fr3/meshes/visual/link0.stl" />
       </geometry>
       <material name="fr3_white" />
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/collision/link0.stl" />
+        <mesh filename="../fr3/meshes/collision/link0.stl" />
       </geometry>
     </collision>
     <inertial>
@@ -21,13 +21,13 @@
   <link name="fr3_link1">
     <visual>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/visual/link1.stl" />
+        <mesh filename="../fr3/meshes/visual/link1.stl" />
       </geometry>
       <material name="fr3_white" />
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/collision/link1.stl" />
+        <mesh filename="../fr3/meshes/collision/link1.stl" />
       </geometry>
     </collision>
     <inertial>
@@ -40,13 +40,13 @@
   <link name="fr3_link2">
     <visual>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/visual/link2.stl" />
+        <mesh filename="../fr3/meshes/visual/link2.stl" />
       </geometry>
       <material name="fr3_white" />
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/collision/link2.stl" />
+        <mesh filename="../fr3/meshes/collision/link2.stl" />
       </geometry>
     </collision>
     <inertial>
@@ -59,13 +59,13 @@
   <link name="fr3_link3">
     <visual>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/visual/link3.stl" />
+        <mesh filename="../fr3/meshes/visual/link3.stl" />
       </geometry>
       <material name="fr3_white" />
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/collision/link3.stl" />
+        <mesh filename="../fr3/meshes/collision/link3.stl" />
       </geometry>
     </collision>
     <inertial>
@@ -78,13 +78,13 @@
   <link name="fr3_link4">
     <visual>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/visual/link4.stl" />
+        <mesh filename="../fr3/meshes/visual/link4.stl" />
       </geometry>
       <material name="fr3_white" />
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/collision/link4.stl" />
+        <mesh filename="../fr3/meshes/collision/link4.stl" />
       </geometry>
     </collision>
     <inertial>
@@ -97,13 +97,13 @@
   <link name="fr3_link5">
     <visual>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/visual/link5.stl" />
+        <mesh filename="../fr3/meshes/visual/link5.stl" />
       </geometry>
       <material name="fr3_white" />
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/collision/link5.stl" />
+        <mesh filename="../fr3/meshes/collision/link5.stl" />
       </geometry>
     </collision>
     <inertial>
@@ -116,13 +116,13 @@
   <link name="fr3_link6">
     <visual>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/visual/link6.stl" />
+        <mesh filename="../fr3/meshes/visual/link6.stl" />
       </geometry>
       <material name="fr3_white" />
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/collision/link6.stl" />
+        <mesh filename="../fr3/meshes/collision/link6.stl" />
       </geometry>
     </collision>
     <inertial>
@@ -135,13 +135,13 @@
   <link name="fr3_link7">
     <visual>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/visual/link7.stl" />
+        <mesh filename="../fr3/meshes/visual/link7.stl" />
       </geometry>
       <material name="fr3_white" />
     </visual>
     <collision>
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/fr3/meshes/collision/link7.stl" />
+        <mesh filename="../fr3/meshes/collision/link7.stl" />
       </geometry>
     </collision>
     <inertial>
@@ -162,7 +162,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_link.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_link.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1.0" />
@@ -171,7 +171,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_link.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -184,7 +184,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_ee_link.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_ee_link.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1.0" />
@@ -193,7 +193,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_ee_link.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_ee_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -206,7 +206,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_back_link.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_back_link.STL" />
       </geometry>
       <material name="RAL_9003_Signal_White">
         <color rgba="0.941 0.941 0.941 1.0" />
@@ -215,7 +215,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_back_link.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_back_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -228,7 +228,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_thumb_bend_link.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_thumb_bend_link.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1.0" />
@@ -237,7 +237,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_thumb_bend_link.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_thumb_bend_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -250,7 +250,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_thumb_rota_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_thumb_rota_link1.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1.0" />
@@ -259,7 +259,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_thumb_rota_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_thumb_rota_link1.STL" />
       </geometry>
     </collision>
   </link>
@@ -272,7 +272,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_thumb_rotaback_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_thumb_rotaback_link1.STL" />
       </geometry>
       <material name="RAL_9003_Signal_White">
         <color rgba="0.941 0.941 0.941 1.0" />
@@ -281,7 +281,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_thumb_rotaback_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_thumb_rotaback_link1.STL" />
       </geometry>
     </collision>
   </link>
@@ -294,7 +294,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_thumb_rota_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_thumb_rota_link2.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1.0" />
@@ -303,7 +303,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_thumb_rota_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_thumb_rota_link2.STL" />
       </geometry>
     </collision>
   </link>
@@ -316,7 +316,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_thumb_rotaback_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_thumb_rotaback_link2.STL" />
       </geometry>
       <material name="RAL_9003_Signal_White">
         <color rgba="0.941 0.941 0.941 1.0" />
@@ -325,7 +325,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_thumb_rotaback_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_thumb_rotaback_link2.STL" />
       </geometry>
     </collision>
   </link>
@@ -338,7 +338,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_thumb_rota_tip.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_thumb_rota_tip.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1.0" />
@@ -347,7 +347,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_thumb_rota_tip.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_thumb_rota_tip.STL" />
       </geometry>
     </collision>
   </link>
@@ -360,7 +360,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_index_bend_link.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_index_bend_link.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1.0" />
@@ -369,7 +369,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_index_bend_link.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_index_bend_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -382,7 +382,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_index_rota_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_index_rota_link1.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1" />
@@ -391,7 +391,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_index_rota_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_index_rota_link1.STL" />
       </geometry>
     </collision>
   </link>
@@ -404,7 +404,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_index_rotaback_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_index_rotaback_link1.STL" />
       </geometry>
       <material name="RAL_9003_Signal_White">
         <color rgba="0.941 0.941 0.941 1" />
@@ -413,7 +413,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_index_rotaback_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_index_rotaback_link1.STL" />
       </geometry>
     </collision>
   </link>
@@ -426,7 +426,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_index_rota_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_index_rota_link2.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1" />
@@ -435,7 +435,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_index_rota_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_index_rota_link2.STL" />
       </geometry>
     </collision>
   </link>
@@ -448,7 +448,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_index_rotaback_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_index_rotaback_link2.STL" />
       </geometry>
       <material name="RAL_9003_Signal_White">
         <color rgba="0.941 0.941 0.941 1" />
@@ -457,7 +457,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_index_rotaback_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_index_rotaback_link2.STL" />
       </geometry>
     </collision>
   </link>
@@ -470,7 +470,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_index_rota_tip.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_index_rota_tip.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1" />
@@ -479,7 +479,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_index_rota_tip.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_index_rota_tip.STL" />
       </geometry>
     </collision>
   </link>
@@ -492,7 +492,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_mid_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_mid_link1.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1" />
@@ -501,7 +501,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_mid_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_mid_link1.STL" />
       </geometry>
     </collision>
   </link>
@@ -514,7 +514,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_midback_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_midback_link1.STL" />
       </geometry>
       <material name="RAL_9003_Signal_White">
         <color rgba="0.941 0.941 0.941 1" />
@@ -523,7 +523,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_midback_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_midback_link1.STL" />
       </geometry>
     </collision>
   </link>
@@ -536,7 +536,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_mid_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_mid_link2.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1" />
@@ -545,7 +545,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_mid_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_mid_link2.STL" />
       </geometry>
     </collision>
   </link>
@@ -558,7 +558,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_midback_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_midback_link2.STL" />
       </geometry>
       <material name="RAL_9003_Signal_White">
         <color rgba="0.941 0.941 0.941 1" />
@@ -567,7 +567,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_midback_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_midback_link2.STL" />
       </geometry>
     </collision>
   </link>
@@ -580,7 +580,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_mid_tip.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_mid_tip.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1" />
@@ -589,7 +589,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_mid_tip.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_mid_tip.STL" />
       </geometry>
     </collision>
   </link>
@@ -602,7 +602,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_ring_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_ring_link1.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1" />
@@ -611,7 +611,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_ring_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_ring_link1.STL" />
       </geometry>
     </collision>
   </link>
@@ -624,7 +624,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_ringback_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_ringback_link1.STL" />
       </geometry>
       <material name="RAL_9003_Signal_White">
         <color rgba="0.941 0.941 0.941 1" />
@@ -633,7 +633,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_ringback_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_ringback_link1.STL" />
       </geometry>
     </collision>
   </link>
@@ -646,7 +646,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_ring_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_ring_link2.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1" />
@@ -655,7 +655,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_ring_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_ring_link2.STL" />
       </geometry>
     </collision>
   </link>
@@ -668,7 +668,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_ringback_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_ringback_link2.STL" />
       </geometry>
       <material name="RAL_9003_Signal_White">
         <color rgba="0.941 0.941 0.941 1" />
@@ -677,7 +677,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_ringback_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_ringback_link2.STL" />
       </geometry>
     </collision>
   </link>
@@ -690,7 +690,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_ring_tip.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_ring_tip.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1" />
@@ -699,7 +699,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_ring_tip.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_ring_tip.STL" />
       </geometry>
     </collision>
   </link>
@@ -712,7 +712,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_pinky_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_pinky_link1.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1" />
@@ -721,7 +721,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_pinky_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_pinky_link1.STL" />
       </geometry>
     </collision>
   </link>
@@ -734,7 +734,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_pinkyback_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_pinkyback_link1.STL" />
       </geometry>
       <material name="RAL_9003_Signal_White">
         <color rgba="0.941 0.941 0.941 1" />
@@ -743,7 +743,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_pinkyback_link1.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_pinkyback_link1.STL" />
       </geometry>
     </collision>
   </link>
@@ -756,7 +756,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_pinky_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_pinky_link2.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1" />
@@ -765,7 +765,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_pinky_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_pinky_link2.STL" />
       </geometry>
     </collision>
   </link>
@@ -778,7 +778,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_pinkyback_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_pinkyback_link2.STL" />
       </geometry>
       <material name="RAL_9003_Signal_White">
         <color rgba="0.941 0.941 0.941 1" />
@@ -787,7 +787,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_pinkyback_link2.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_pinkyback_link2.STL" />
       </geometry>
     </collision>
   </link>
@@ -800,7 +800,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_pinky_tip.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_pinky_tip.STL" />
       </geometry>
       <material name="RAL_9005_Jet_Black">
         <color rgba="0.055 0.055 0.063 1" />
@@ -809,7 +809,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/nas_main/sibeenkim/work/simtoolreal/assets/urdf/fr3_xhand_description/xhand1_right/meshes/right_hand_pinky_tip.STL" />
+        <mesh filename="../xhand1_right/meshes/right_hand_pinky_tip.STL" />
       </geometry>
     </collision>
   </link>
