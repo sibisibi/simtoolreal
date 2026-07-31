@@ -56,7 +56,7 @@ def build_robot_articulation_usd_cfg(
         prim_path="/World/envs/env_.*/Robot",
         spawn=UsdFileCfg(usd_path=usd_path),
         init_state=ArticulationCfg.InitialStateCfg(
-            pos=(0.0, 0.8, 0.0),
+            pos=(0.0, 0.48, 0.53),
             rot=(1.0, 0.0, 0.0, 0.0),
             joint_pos={
                 **arm_default,
@@ -69,6 +69,8 @@ def build_robot_articulation_usd_cfg(
                 joint_names_expr=[robot.arm_joint_regex],
                 stiffness=robot.arm_stiffness,
                 damping=robot.arm_damping,
+                armature=robot.arm_armature,
+                friction=robot.arm_friction,
             ),
             "hand": ImplicitActuatorCfg(
                 joint_names_expr=[robot.hand_joint_regex],

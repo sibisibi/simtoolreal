@@ -23,6 +23,8 @@ class RobotCfg:
     palm_center_offset: tuple[float, float, float] = MISSING
     fingertip_offset_by_body: dict[str, tuple[float, float, float]] = MISSING
     raycast_link_exprs: tuple[str, ...] = MISSING
+    arm_armature: dict[str, float] | None = None
+    arm_friction: dict[str, float] | None = None
 
 
 _FR3_XHAND_HAND_JOINTS = (
@@ -48,15 +50,18 @@ _FR3_XHAND_SHARED = dict(
     palm_body="fr3_link7",
     fingertip_body_regex="(thumb_rota_link2|index_rota_link2|mid_link2|ring_link2|pinky_link2)",
     fingertip_bodies=_FR3_XHAND_FINGERTIP_BODIES,
-    arm_stiffness={f"fr3_joint{i}": 400.0 for i in range(1, 8)},
-    arm_damping={f"fr3_joint{i}": 80.0 for i in range(1, 8)},
     hand_stiffness={j: 3.0 for j in _FR3_XHAND_HAND_JOINTS},
-    hand_damping={j: 0.1 for j in _FR3_XHAND_HAND_JOINTS},
-    hand_armature={j: 0.001 for j in _FR3_XHAND_HAND_JOINTS},
+    hand_armature={j: 0.0 for j in _FR3_XHAND_HAND_JOINTS},
+    arm_armature={
+        f"fr3_joint{i}": v for i, v in enumerate(
+            (0.6057, 0.6057, 0.4625, 0.4625, 0.2055, 0.2055, 0.2055), 1
+        )
+    },
+    arm_friction={f"fr3_joint{i}": 0.2 for i in range(1, 8)},
     arm_default_pos={
-        "fr3_joint1": -1.571, "fr3_joint2": -0.6, "fr3_joint3": 0.0,
-        "fr3_joint4": -2.2, "fr3_joint5": 0.0, "fr3_joint6": 1.9,
-        "fr3_joint7": -0.785,
+        "fr3_joint1": -1.5708, "fr3_joint2": 0.2618, "fr3_joint3": 0.0,
+        "fr3_joint4": -2.0071, "fr3_joint5": 0.0, "fr3_joint6": 2.3562,
+        "fr3_joint7": -0.7854,
     },
     palm_center_offset=(0.0, 0.0, 0.16),
     fingertip_offset_by_body={
@@ -91,6 +96,44 @@ _SHARPA_FINGERTIP_BODIES = (
     "left_index_DP", "left_middle_DP", "left_ring_DP",
     "left_thumb_DP", "left_pinky_DP",
 )
+
+_FR3_ADAPTER_URDF = "assets/urdf/fr3_xhand_description/fr3_xhand/fr3_xhand.urdf"
+_FR3_NOADAPTER_URDF = (
+    "assets/urdf/fr3_xhand_description/fr3_xhand/fr3_xhand_noadapter.urdf"
+)
+
+# kp is franka_ros2 controllers.yaml (a1, a2) or IsaacLab FRANKA_PANDA_HIGH_PD_CFG
+# (a3, a4). kd is either as that source ships it, or 2*sqrt(kp*armature).
+_ARM_GAIN_ROWS = {
+    "a1": ((600.0, 600.0, 600.0, 600.0, 250.0, 150.0, 50.0),
+           (30.0, 30.0, 30.0, 30.0, 10.0, 10.0, 5.0)),
+    "a2": ((600.0, 600.0, 600.0, 600.0, 250.0, 150.0, 50.0),
+           (38.1272, 38.1272, 33.3167, 33.3167, 14.3353, 11.1041, 6.4109)),
+    "a3": ((400.0,) * 7, (80.0,) * 7),
+    "a4": ((400.0,) * 7,
+           (31.1307, 31.1307, 27.2029, 27.2029, 18.1328, 18.1328, 18.1328)),
+}
+
+# h1 is RoboVerse's flat value, h2 is 2*sqrt(kp*M_ii) at the home pose.
+_HAND_DAMPING_ROWS = {
+    "h1": (0.1,) * 12,
+    "h2": (0.0545, 0.0650, 0.0176, 0.0660, 0.0482, 0.0110,
+           0.0470, 0.0110, 0.0470, 0.0110, 0.0470, 0.0110),
+}
+
+
+def _fr3_xhand(urdf: str, arm_row: str, hand_row: str) -> RobotCfg:
+    kp, kd = _ARM_GAIN_ROWS[arm_row]
+    return RobotCfg(
+        urdf=urdf,
+        arm_stiffness={f"fr3_joint{i}": v for i, v in enumerate(kp, 1)},
+        arm_damping={f"fr3_joint{i}": v for i, v in enumerate(kd, 1)},
+        hand_damping=dict(
+            zip(_FR3_XHAND_HAND_JOINTS, _HAND_DAMPING_ROWS[hand_row])
+        ),
+        **_FR3_XHAND_SHARED,
+    )
+
 
 ROBOT_PROFILES: dict[str, RobotCfg] = {
     "kuka-sharpa": RobotCfg(
@@ -165,12 +208,14 @@ ROBOT_PROFILES: dict[str, RobotCfg] = {
             "/World/envs/env_.*/Robot/left_.*/visuals",
         ),
     ),
-    "fr3-xhand-adapter": RobotCfg(
-        urdf="assets/urdf/fr3_xhand_description/fr3_xhand/fr3_xhand.urdf",
-        **_FR3_XHAND_SHARED,
-    ),
-    "fr3-xhand": RobotCfg(
-        urdf="assets/urdf/fr3_xhand_description/fr3_xhand/fr3_xhand_noadapter.urdf",
-        **_FR3_XHAND_SHARED,
-    ),
+    "fr3-xhand-adapter": _fr3_xhand(_FR3_ADAPTER_URDF, "a3", "h1"),
+    "fr3-xhand": _fr3_xhand(_FR3_NOADAPTER_URDF, "a3", "h1"),
 }
+
+ROBOT_PROFILES.update(
+    {
+        f"fr3-xhand-{a}{h}": _fr3_xhand(_FR3_ADAPTER_URDF, a, h)
+        for a in _ARM_GAIN_ROWS
+        for h in _HAND_DAMPING_ROWS
+    }
+)
