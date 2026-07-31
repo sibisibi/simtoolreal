@@ -23,6 +23,7 @@ class RobotCfg:
     palm_center_offset: tuple[float, float, float] = MISSING
     fingertip_offset_by_body: dict[str, tuple[float, float, float]] = MISSING
     raycast_link_exprs: tuple[str, ...] = MISSING
+    base_quat_wxyz: tuple[float, float, float, float] = (1.0, 0.0, 0.0, 0.0)
     arm_armature: dict[str, float] | None = None
     arm_friction: dict[str, float] | None = None
 
@@ -58,8 +59,11 @@ _FR3_XHAND_SHARED = dict(
         )
     },
     arm_friction={f"fr3_joint{i}": 0.2 for i in range(1, 8)},
+    # Base yawed -90 deg about z so the robot faces the table instead of
+    # spending joint 1's range reaching sideways at it.
+    base_quat_wxyz=(0.7071067811865476, 0.0, 0.0, -0.7071067811865476),
     arm_default_pos={
-        "fr3_joint1": -1.5708, "fr3_joint2": 0.2618, "fr3_joint3": 0.0,
+        "fr3_joint1": 0.0, "fr3_joint2": 0.2618, "fr3_joint3": 0.0,
         "fr3_joint4": -2.0071, "fr3_joint5": 0.0, "fr3_joint6": 2.3562,
         "fr3_joint7": -0.7854,
     },
