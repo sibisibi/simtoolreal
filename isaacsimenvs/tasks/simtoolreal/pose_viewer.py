@@ -7,6 +7,7 @@ Three.js/URDF HTML viewer that can be opened locally or logged to WandB.
 
 from __future__ import annotations
 
+import random
 import time
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -19,12 +20,10 @@ import numpy as np
 
 from isaacsimenvs.utils.interactive_viewer import create_html, make_embedded_robot, make_url_robot
 
-from .utils.scene_utils import JOINT_NAMES_CANONICAL
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-GITHUB_RAW_BASE_MAIN = "https://raw.githubusercontent.com/tylerlum/simtoolreal/main/"
-ROBOT_URDF_RELATIVE_PATH = "assets/urdf/kuka_sharpa_description/iiwa14_left_sharpa_adjusted_restricted.urdf"
+GITHUB_RAW_BASE_MAIN = "https://raw.githubusercontent.com/sibisibi/simtoolreal/main/"
 TABLE_URDF_PATH = REPO_ROOT / "assets" / "urdf" / "table_narrow.urdf"
 
 
@@ -177,7 +176,7 @@ def capture_pose_viewer_frame(env, env_id: int) -> dict[str, Any]:
 
     if hasattr(env, "_perm_lab_to_canon"):
         joint_pos = env.robot.data.joint_pos[env_id, env._perm_lab_to_canon]
-        joint_names = list(JOINT_NAMES_CANONICAL)
+        joint_names = list(env.cfg.robot.joint_order)
     else:
         joint_pos = env.robot.data.joint_pos[env_id]
         joint_names = list(env.robot.data.joint_names)
@@ -206,6 +205,7 @@ def capture_pose_viewer_frame(env, env_id: int) -> dict[str, Any]:
 def build_pose_viewer_html(
     *,
     frames: list[dict[str, Any]],
+    robot_urdf_rel: str,
     object_urdf_text: str,
     table_urdf_text: str,
     hole_urdf_text: str | None = None,
@@ -217,16 +217,20 @@ def build_pose_viewer_html(
 ) -> str:
     """Build a self-contained-ish viewer HTML string from captured frames.
 
-    Object and table URDFs are embedded.  The robot URDF is URL-backed because
-    the SHARPA hand references mesh files that the browser must fetch.
+    Robot, object, and table URDFs are embedded; their relative/absolute mesh
+    filenames are rewritten to GitHub-raw URLs so the browser can fetch them.
     """
 
     if not frames:
         raise ValueError("Cannot build pose viewer from zero frames.")
 
     raw_base = _normalize_raw_base(github_raw_base)
-    robot_urdf_url = raw_base + ROBOT_URDF_RELATIVE_PATH
-    _check_url(robot_urdf_url, url_check)
+    robot_urdf_path = REPO_ROOT / robot_urdf_rel
+    robot_urdf_text = _rewrite_embedded_urdf_mesh_urls(
+        robot_urdf_path.read_text(encoding="utf-8"),
+        source_urdf_path=robot_urdf_path,
+        raw_base=raw_base,
+    )
     if object_urdf_path is not None:
         object_urdf_text = _rewrite_embedded_urdf_mesh_urls(
             object_urdf_text,
@@ -248,7 +252,7 @@ def build_pose_viewer_html(
 
     timestamps = np.arange(len(frames), dtype=np.float32) / 60.0
     robots = [
-        make_url_robot(name="robot", urdf_url=robot_urdf_url, animated=True),
+        make_embedded_robot(name="robot", urdf_text=robot_urdf_text, animated=True),
         make_embedded_robot(name="table", urdf_text=table_urdf_text),
         make_embedded_robot(name="object", urdf_text=object_urdf_text),
         make_embedded_robot(
@@ -304,17 +308,13 @@ class SimToolRealPoseViewerWrapper(gym.Wrapper):
         self.output_dir = Path(output_dir)
         self.capture_len = int(capture_len)
         self.capture_interval = int(capture_interval)
-        self.env_id = int(env_id)
         self.wandb_key = wandb_key
         self.github_raw_base = github_raw_base
         self.url_check = url_check
-        self._object_urdf_text, self._object_urdf_path = object_urdf_for_env(
-            inner, self.env_id
-        )
-        self._table_urdf_text, self._table_urdf_path = table_urdf_for_env(
-            inner, self.env_id
-        )
-        self._hole_urdf_text, self._hole_urdf_path = hole_urdf_for_env(inner, self.env_id)
+        self._robot_urdf_rel = inner.cfg.robot.urdf
+        # separate RNG so viewer env sampling never touches the training seed
+        self._env_rng = random.Random(0xD3C4D)
+        self._bind_env(self._env_rng.randrange(inner.num_envs))
 
         self._step = 0
         self._capture_index = 0
@@ -335,11 +335,24 @@ class SimToolRealPoseViewerWrapper(gym.Wrapper):
             flush=True,
         )
 
+    def _bind_env(self, env_id: int) -> None:
+        """Bind the per-env constants, at construction and at each capture window start."""
+        inner = self.env.unwrapped
+        self.env_id = int(env_id)
+        self._object_urdf_text, self._object_urdf_path = object_urdf_for_env(
+            inner, self.env_id
+        )
+        self._table_urdf_text, self._table_urdf_path = table_urdf_for_env(
+            inner, self.env_id
+        )
+        self._hole_urdf_text, self._hole_urdf_path = hole_urdf_for_env(inner, self.env_id)
+
     def step(self, action):
         result = self.env.step(action)
         self._step += 1
 
         if self._frames is None and self.capture_interval > 0 and self._step % self.capture_interval == 0:
+            self._bind_env(self._env_rng.randrange(self.env.unwrapped.num_envs))
             self._frames = []
             self._depth_frames = []
             self._depth_frames_clean = []
@@ -408,9 +421,10 @@ class SimToolRealPoseViewerWrapper(gym.Wrapper):
             return
 
         suffix = "partial" if partial else f"step_{self._step:09d}"
-        html_path = self.output_dir / f"pose_viewer_{suffix}_{self._capture_index:04d}.html"
+        html_path = self.output_dir / f"pose_viewer_{suffix}_env{self.env_id:05d}_{self._capture_index:04d}.html"
         html_text = build_pose_viewer_html(
             frames=frames,
+            robot_urdf_rel=self._robot_urdf_rel,
             object_urdf_text=self._object_urdf_text,
             table_urdf_text=self._table_urdf_text,
             hole_urdf_text=self._hole_urdf_text,
@@ -439,8 +453,9 @@ class SimToolRealPoseViewerWrapper(gym.Wrapper):
             return
 
         try:
-            wandb.log({self.wandb_key: wandb.Html(html_text)})
-            print(f"[pose_viewer] logged WandB Html key={self.wandb_key} step={self._step}", flush=True)
+            wandb.log({self.wandb_key: wandb.Html(html_text), "pose_viewer/env_id": self.env_id})
+            wandb.run.summary["interactive_viewer_latest"] = wandb.Html(html_text)
+            print(f"[pose_viewer] logged WandB Html key={self.wandb_key} step={self._step} env={self.env_id}", flush=True)
         except Exception as exc:
             print(f"[pose_viewer] WandB log failed: {exc}", flush=True)
 
