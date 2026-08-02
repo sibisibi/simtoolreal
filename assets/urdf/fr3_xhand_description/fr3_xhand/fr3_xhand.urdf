@@ -157,7 +157,7 @@
       <inertia ixx="0.000140558" ixy="-0.000015818" ixz="0.000022616" iyy="0.000140339" iyz="0.000022663" izz="0.000161130" />
     </inertial><visual><geometry><mesh filename="meshes/bracket_plate.stl" /></geometry><material name="bracket_black_plate"><color rgba="0.1 0.1 0.1 1" /></material></visual><visual><geometry><mesh filename="meshes/bracket_base.stl" /></geometry><material name="bracket_black_base"><color rgba="0.1 0.1 0.1 1" /></material></visual></link>
 
-  <link name="right_hand_link">
+  <link name="palm">
     <inertial>
       <origin xyz="0.010035126340455 -0.00366835056360167 0.0582695212892126" rpy="0 0 0" />
       <mass value="0.53851506" />
@@ -179,7 +179,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_ee_link">
+  <link name="ee_link">
     <inertial>
       <origin xyz="-2.0841207270891692e-07 3.8348828560075975e-21 -1.3563799019447874e-07" rpy="0 0 0" />
       <mass value="0.00000565" />
@@ -201,7 +201,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_back_link">
+  <link name="back_link">
     <inertial>
       <origin xyz="-0.01398377938248142 -0.0015379425118725082 -0.00063579171219403782" rpy="0 0 0" />
       <mass value="0.00000002" />
@@ -223,7 +223,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_thumb_bend_link">
+  <link name="thumb_bend_link">
     <inertial>
       <origin xyz="-0.00116534489100702 0.0144358799903649 5.40665183232092E-05" rpy="0 0 0" />
       <mass value="0.01151453" />
@@ -245,7 +245,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_thumb_rota_link1">
+  <link name="thumb_rota_link1">
     <inertial>
       <origin xyz="-0.00036176505273174 0.0287681485595387 0.00133929684947857" rpy="0 0 0" />
       <mass value="0.1322853" />
@@ -267,7 +267,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_thumb_rotaback_link1">
+  <link name="thumb_rotaback_link1">
     <inertial>
       <origin xyz="0.0014443599244302215 -0.029634359865370979 -0.0075658619486086744" rpy="0 0 0" />
       <mass value="0.00000006" />
@@ -289,7 +289,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_thumb_rota_link2">
+  <link name="thumb_rota_link2">
     <inertial>
       <origin xyz="-0.000881604281134662 0.0225339954987271 0.000614550644508979" rpy="0 0 0" />
       <mass value="0.03516871" />
@@ -311,7 +311,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_thumb_rotaback_link2">
+  <link name="thumb_rotaback_link2">
     <inertial>
       <origin xyz="-0.00053849854799079314 -0.025838429654899738 -0.0092267023245015158" rpy="0 0 0" />
       <mass value="0.00000004" />
@@ -333,7 +333,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_thumb_rota_tip">
+  <link name="thumb_rota_tip">
     <inertial>
       <origin xyz="-2.6844180315264694e-20 -2.4818518383269485e-07 1.5425583032177642e-08" rpy="0 0 0" />
       <mass value="0.00000565" />
@@ -355,7 +355,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_index_bend_link">
+  <link name="index_bend_link">
     <inertial>
       <origin xyz="-0.000715851164577249 0.000118997558760756 0.0111903014853532" rpy="0 0 0" />
       <mass value="0.068721" />
@@ -377,7 +377,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_index_rota_link1">
+  <link name="index_rota_link1">
     <inertial>
       <origin xyz="0.00063293051295399 0.00013300810657332 0.0355868719939061" rpy="0 0 0" />
       <mass value="0.06298297" />
@@ -399,7 +399,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_index_rotaback_link1">
+  <link name="index_rotaback_link1">
     <inertial>
       <origin xyz="-0.011591213443041018 -0.00014835389127761277 -0.024133298670652975" rpy="0 0 0" />
       <mass value="0.00000002" />
@@ -421,7 +421,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_index_rota_link2">
+  <link name="index_rota_link2">
     <inertial>
       <origin xyz="0.00119905190206782 -0.000248361661986104 0.0213789854478679" rpy="0 0 0" />
       <mass value="0.01582395" />
@@ -443,7 +443,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_index_rotaback_link2">
+  <link name="index_rotaback_link2">
     <inertial>
       <origin xyz="-0.0075861129043626038 0.00016022978507833699 -0.017678258592545217" rpy="0 0 0" />
       <mass value="0.00000001" />
@@ -465,7 +465,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_index_rota_tip">
+  <link name="index_rota_tip">
     <inertial>
       <origin xyz="-2.0841207270891692e-07 -6.1358125696121561e-20 -1.3563799019447874e-07" rpy="0 0 0" />
       <mass value="0.00000565" />
@@ -487,7 +487,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_mid_link1">
+  <link name="mid_link1">
     <inertial>
       <origin xyz="0.000530417592106097 3.58049083658378E-05 0.033278467115721" rpy="0 0 0" />
       <mass value="0.06298297" />
@@ -509,7 +509,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_midback_link1">
+  <link name="midback_link1">
     <inertial>
       <origin xyz="-0.011591213443041018 -0.00014835389127761285 -0.024133298670652968" rpy="0 0 0" />
       <mass value="0.00000002" />
@@ -531,7 +531,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_mid_link2">
+  <link name="mid_link2">
     <inertial>
       <origin xyz="0.00119905190206755 -0.000248361661996566 0.0213789854478682" rpy="0 0 0" />
       <mass value="0.01582395" />
@@ -553,7 +553,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_midback_link2">
+  <link name="midback_link2">
     <inertial>
       <origin xyz="-0.0075861129043626038 0.00016022978507833699 -0.017678258592545217" rpy="0 0 0" />
       <mass value="0.00000001" />
@@ -575,7 +575,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_mid_tip">
+  <link name="mid_tip">
     <inertial>
       <origin xyz="-2.0841207270891692e-07 -2.6844179992053183e-20 -1.3563799019447874e-07" rpy="0 0 0" />
       <mass value="0.00000565" />
@@ -597,7 +597,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_ring_link1">
+  <link name="ring_link1">
     <inertial>
       <origin xyz="0.000530417592105675 3.58049083603318E-05 0.0332784671157224" rpy="0 0 0" />
       <mass value="0.06298297" />
@@ -619,7 +619,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_ringback_link1">
+  <link name="ringback_link1">
     <inertial>
       <origin xyz="-0.011591213443041015 -0.00014835389127761277 -0.024133298670652944" rpy="0 0 0" />
       <mass value="0.00000002" />
@@ -641,7 +641,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_ring_link2">
+  <link name="ring_link2">
     <inertial>
       <origin xyz="0.00119905192644367 -0.000248361559624762 0.0213789854805378" rpy="0 0 0" />
       <mass value="0.01582395" />
@@ -663,7 +663,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_ringback_link2">
+  <link name="ringback_link2">
     <inertial>
       <origin xyz="-0.0075861129043626038 0.00016022978507833699 -0.017678258592545217" rpy="0 0 0" />
       <mass value="0.00000001" />
@@ -685,7 +685,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_ring_tip">
+  <link name="ring_tip">
     <inertial>
       <origin xyz="-2.0841207270891692e-07 -7.6697657120151951e-21 -1.3563799019447874e-07" rpy="0 0 0" />
       <mass value="0.00000565" />
@@ -707,7 +707,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_pinky_link1">
+  <link name="pinky_link1">
     <inertial>
       <origin xyz="0.00053041759210553 3.58049083602902E-05 0.0332784671157224" rpy="0 0 0" />
       <mass value="0.06298297" />
@@ -729,7 +729,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_pinkyback_link1">
+  <link name="pinkyback_link1">
     <inertial>
       <origin xyz="-0.01159121344304102 -0.0001483538912776128 -0.024133298670652951" rpy="0 0 0" />
       <mass value="0.00000002" />
@@ -751,7 +751,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_pinky_link2">
+  <link name="pinky_link2">
     <inertial>
       <origin xyz="0.001199051902067 -0.000248361662016403 0.0213789854478657" rpy="0 0 0" />
       <mass value="0.01582395" />
@@ -773,7 +773,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_pinkyback_link2">
+  <link name="pinkyback_link2">
     <inertial>
       <origin xyz="-0.0075861129043626038 0.00016022978507833699 -0.017678258592545217" rpy="0 0 0" />
       <mass value="0.00000001" />
@@ -795,7 +795,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="right_hand_pinky_tip">
+  <link name="pinky_tip">
     <inertial>
       <origin xyz="-2.0841207270891692e-07 -2.3009297136045587e-20 -1.3563799019447874e-07" rpy="0 0 0" />
       <mass value="0.00000565" />
@@ -893,218 +893,218 @@
     <child link="fr3_link8" />
   </joint>
 
-<joint name="hand_mount" type="fixed"><parent link="fr3_link8" /><child link="right_hand_link" /><origin xyz="-0.02616295 -0.02616295 0.042" rpy="-3.1416 -1.5708 0.7854" /></joint><joint name="right_hand_ee_joint" type="fixed">
+<joint name="hand_mount" type="fixed"><parent link="fr3_link8" /><child link="palm" /><origin xyz="-0.02616295 -0.02616295 0.042" rpy="-3.1416 -1.5708 0.7854" /></joint><joint name="ee_joint" type="fixed">
     <origin xyz="0 0 0.065" rpy="0 0 0" />
-    <parent link="right_hand_link" />
-    <child link="right_hand_ee_link" />
+    <parent link="palm" />
+    <child link="ee_link" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_back_joint" type="fixed">
+  <joint name="back_joint" type="fixed">
     <origin xyz="0 0 0.065" rpy="0 0 0" />
-    <parent link="right_hand_link" />
-    <child link="right_hand_back_link" />
+    <parent link="palm" />
+    <child link="back_link" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_thumb_bend_joint" type="revolute">
+  <joint name="thumb_joint0" type="revolute">
     <origin xyz="0.0095 0.0228 0.0305" rpy="0 0 0" />
-    <parent link="right_hand_link" />
-    <child link="right_hand_thumb_bend_link" />
+    <parent link="palm" />
+    <child link="thumb_bend_link" />
     <axis xyz="0 0 -1" />
     <limit lower="0" upper="1.832" effort="1.1" velocity="8.63" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_thumb_rota_joint1" type="revolute">
+  <joint name="thumb_joint1" type="revolute">
     <origin xyz="0.0083177 0.028599 -0.00178" rpy="0 0.2618 -0.0407" />
-    <parent link="right_hand_thumb_bend_link" />
-    <child link="right_hand_thumb_rota_link1" />
+    <parent link="thumb_bend_link" />
+    <child link="thumb_rota_link1" />
     <axis xyz="1 0 0" />
     <limit lower="-0.698" upper="1.57" effort="1.1" velocity="8.63" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_thumb_rotaback_joint1" type="fixed">
+  <joint name="thumb_rotaback_joint1" type="fixed">
     <origin xyz="0 0.0553000000000007 0" rpy="0 0 0" />
-    <parent link="right_hand_thumb_rota_link1" />
-    <child link="right_hand_thumb_rotaback_link1" />
+    <parent link="thumb_rota_link1" />
+    <child link="thumb_rotaback_link1" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_thumb_rota_joint2" type="revolute">
+  <joint name="thumb_joint2" type="revolute">
     <origin xyz="0 0.0553 0" rpy="0 0 0" />
-    <parent link="right_hand_thumb_rota_link1" />
-    <child link="right_hand_thumb_rota_link2" />
+    <parent link="thumb_rota_link1" />
+    <child link="thumb_rota_link2" />
     <axis xyz="1 0 0" />
     <limit lower="0" upper="1.57" effort="0.4" velocity="14.38" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_thumb_rotaback_joint2" type="fixed">
+  <joint name="thumb_rotaback_joint2" type="fixed">
     <origin xyz="0 0.0502276499414863 0" rpy="0 0 0" />
-    <parent link="right_hand_thumb_rota_link2" />
-    <child link="right_hand_thumb_rotaback_link2" />
+    <parent link="thumb_rota_link2" />
+    <child link="thumb_rotaback_link2" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_thumb_rota_joint3" type="fixed">
+  <joint name="thumb_rota_joint3" type="fixed">
     <origin xyz="0 0.0502276499414863 0" rpy="0 0 0" />
-    <parent link="right_hand_thumb_rota_link2" />
-    <child link="right_hand_thumb_rota_tip" />
+    <parent link="thumb_rota_link2" />
+    <child link="thumb_rota_tip" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_index_bend_joint" type="revolute">
+  <joint name="index_joint0" type="revolute">
     <origin xyz="0.0065 0.0265 0.0899" rpy="0 0 0" />
-    <parent link="right_hand_link" />
-    <child link="right_hand_index_bend_link" />
+    <parent link="palm" />
+    <child link="index_bend_link" />
     <axis xyz="-1 0 0" />
     <limit lower="-0.174" upper="0.174" effort="0.4" velocity="14.38" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_index_joint1" type="revolute">
+  <joint name="index_joint1" type="revolute">
     <origin xyz="0 0 0.0178" rpy="0 0 0" />
-    <parent link="right_hand_index_bend_link" />
-    <child link="right_hand_index_rota_link1" />
+    <parent link="index_bend_link" />
+    <child link="index_rota_link1" />
     <axis xyz="0 1 0" />
     <limit lower="0" upper="1.919" effort="1.1" velocity="8.63" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_index_rotaback_joint1" type="fixed">
+  <joint name="index_rotaback_joint1" type="fixed">
     <origin xyz="0 0 0.0557999999999955" rpy="0 0 0" />
-    <parent link="right_hand_index_rota_link1" />
-    <child link="right_hand_index_rotaback_link1" />
+    <parent link="index_rota_link1" />
+    <child link="index_rotaback_link1" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_index_joint2" type="revolute">
+  <joint name="index_joint2" type="revolute">
     <origin xyz="0 0 0.0558" rpy="0 0 0" />
-    <parent link="right_hand_index_rota_link1" />
-    <child link="right_hand_index_rota_link2" />
+    <parent link="index_rota_link1" />
+    <child link="index_rota_link2" />
     <axis xyz="0 1 0" />
     <limit lower="0" upper="1.919" effort="0.4" velocity="14.38" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_index_rotaback_joint2" type="fixed">
+  <joint name="index_rotaback_joint2" type="fixed">
     <origin xyz="0 0 0.0422482924089424" rpy="0 0 0" />
-    <parent link="right_hand_index_rota_link2" />
-    <child link="right_hand_index_rotaback_link2" />
+    <parent link="index_rota_link2" />
+    <child link="index_rotaback_link2" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_index_rota_joint3" type="fixed">
+  <joint name="index_rota_joint3" type="fixed">
     <origin xyz="0 0 0.0422482924089424" rpy="0 0 0" />
-    <parent link="right_hand_index_rota_link2" />
-    <child link="right_hand_index_rota_tip" />
+    <parent link="index_rota_link2" />
+    <child link="index_rota_tip" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_mid_joint1" type="revolute">
+  <joint name="middle_joint0" type="revolute">
     <origin xyz="0.0065 0.004 0.1082" rpy="0 0 0" />
-    <parent link="right_hand_link" />
-    <child link="right_hand_mid_link1" />
+    <parent link="palm" />
+    <child link="mid_link1" />
     <axis xyz="0 1 0" />
     <limit lower="0" upper="1.919" effort="1.1" velocity="8.63" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_midback_joint1" type="fixed">
+  <joint name="midback_joint1" type="fixed">
     <origin xyz="0 0 0.0558" rpy="0 0 0" />
-    <parent link="right_hand_mid_link1" />
-    <child link="right_hand_midback_link1" />
+    <parent link="mid_link1" />
+    <child link="midback_link1" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_mid_joint2" type="revolute">
+  <joint name="middle_joint1" type="revolute">
     <origin xyz="0 0 0.0558" rpy="0 0 0" />
-    <parent link="right_hand_mid_link1" />
-    <child link="right_hand_mid_link2" />
+    <parent link="mid_link1" />
+    <child link="mid_link2" />
     <axis xyz="0 1 0" />
     <limit lower="0" upper="1.919" effort="0.4" velocity="14.38" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_midback_joint2" type="fixed">
+  <joint name="midback_joint2" type="fixed">
     <origin xyz="0 0 0.0422482924089416" rpy="0 0 0" />
-    <parent link="right_hand_mid_link2" />
-    <child link="right_hand_midback_link2" />
+    <parent link="mid_link2" />
+    <child link="midback_link2" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_mid_joint3" type="fixed">
+  <joint name="mid_joint3" type="fixed">
     <origin xyz="0 0 0.042248" rpy="0 0 0" />
-    <parent link="right_hand_mid_link2" />
-    <child link="right_hand_mid_tip" />
+    <parent link="mid_link2" />
+    <child link="mid_tip" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_ring_joint1" type="revolute">
+  <joint name="ring_joint0" type="revolute">
     <origin xyz="0.0065 -0.016 0.1052" rpy="0 0 0" />
-    <parent link="right_hand_link" />
-    <child link="right_hand_ring_link1" />
+    <parent link="palm" />
+    <child link="ring_link1" />
     <axis xyz="0 1 0" />
     <limit lower="0" upper="1.919" effort="1.1" velocity="8.63" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_ringback_joint1" type="fixed">
+  <joint name="ringback_joint1" type="fixed">
     <origin xyz="0 0 0.0558" rpy="0 0 0" />
-    <parent link="right_hand_ring_link1" />
-    <child link="right_hand_ringback_link1" />
+    <parent link="ring_link1" />
+    <child link="ringback_link1" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_ring_joint2" type="revolute">
+  <joint name="ring_joint1" type="revolute">
     <origin xyz="0 0 0.0558" rpy="0 0 0" />
-    <parent link="right_hand_ring_link1" />
-    <child link="right_hand_ring_link2" />
+    <parent link="ring_link1" />
+    <child link="ring_link2" />
     <axis xyz="0 1 0" />
     <limit lower="0" upper="1.919" effort="0.4" velocity="14.38" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_ringback_joint2" type="fixed">
+  <joint name="ringback_joint2" type="fixed">
     <origin xyz="0 0 0.0422482924089404" rpy="0 0 0" />
-    <parent link="right_hand_ring_link2" />
-    <child link="right_hand_ringback_link2" />
+    <parent link="ring_link2" />
+    <child link="ringback_link2" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_ring_joint3" type="fixed">
+  <joint name="ring_joint3" type="fixed">
     <origin xyz="0 0 0.0422482924089404" rpy="0 0 0" />
-    <parent link="right_hand_ring_link2" />
-    <child link="right_hand_ring_tip" />
+    <parent link="ring_link2" />
+    <child link="ring_tip" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_pinky_joint1" type="revolute">
+  <joint name="pinky_joint0" type="revolute">
     <origin xyz="0.0065 -0.036 0.1022" rpy="0 0 0" />
-    <parent link="right_hand_link" />
-    <child link="right_hand_pinky_link1" />
+    <parent link="palm" />
+    <child link="pinky_link1" />
     <axis xyz="0 1 0" />
     <limit lower="0" upper="1.919" effort="1.1" velocity="8.63" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_pinkyback_joint1" type="fixed">
+  <joint name="pinkyback_joint1" type="fixed">
     <origin xyz="0 0 0.0558000000000001" rpy="0 0 0" />
-    <parent link="right_hand_pinky_link1" />
-    <child link="right_hand_pinkyback_link1" />
+    <parent link="pinky_link1" />
+    <child link="pinkyback_link1" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_pinky_joint2" type="revolute">
+  <joint name="pinky_joint1" type="revolute">
     <origin xyz="0 0 0.0558" rpy="0 0 0" />
-    <parent link="right_hand_pinky_link1" />
-    <child link="right_hand_pinky_link2" />
+    <parent link="pinky_link1" />
+    <child link="pinky_link2" />
     <axis xyz="0 1 0" />
     <limit lower="0" upper="1.919" effort="0.4" velocity="14.38" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_pinkyback_joint2" type="fixed">
+  <joint name="pinkyback_joint2" type="fixed">
     <origin xyz="0 0 0.0422482924089405" rpy="0 0 0" />
-    <parent link="right_hand_pinky_link2" />
-    <child link="right_hand_pinkyback_link2" />
+    <parent link="pinky_link2" />
+    <child link="pinkyback_link2" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
-  <joint name="right_hand_pinky_joint3" type="fixed">
+  <joint name="pinky_joint3" type="fixed">
     <origin xyz="0 0 0.0422482924089405" rpy="0 0 0" />
-    <parent link="right_hand_pinky_link2" />
-    <child link="right_hand_pinky_tip" />
+    <parent link="pinky_link2" />
+    <child link="pinky_tip" />
     <axis xyz="0 0 0" />
     <dynamics damping="0" friction="0" />
   </joint>
