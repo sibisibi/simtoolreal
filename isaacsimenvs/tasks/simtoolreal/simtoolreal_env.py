@@ -10,6 +10,7 @@ import torch
 
 from isaaclab.envs import DirectRLEnv
 
+from .robots import ROBOT_PROFILES
 from .simtoolreal_env_cfg import SimToolRealEnvCfg
 from .utils.action_utils import apply_action_pipeline, apply_wrench_dr
 from .utils.logging_utils import log_step_metrics
@@ -34,10 +35,13 @@ class SimToolRealEnv(DirectRLEnv):
     def __init__(
         self, cfg: SimToolRealEnvCfg, render_mode: str | None = None, **kwargs
     ) -> None:
+        cfg.robot = ROBOT_PROFILES[cfg.robot]
+        n_joints = len(cfg.robot.joint_order)
+        cfg.action_space = n_joints
         # Override obs/state space from configured field lists before
         # DirectRLEnv / rl_games observes the configclass.
-        cfg.observation_space = compute_obs_dim(cfg.obs.obs_list)
-        cfg.state_space = compute_obs_dim(cfg.obs.state_list)
+        cfg.observation_space = compute_obs_dim(cfg.obs.obs_list, n_joints)
+        cfg.state_space = compute_obs_dim(cfg.obs.state_list, n_joints)
 
         super().__init__(cfg, render_mode, **kwargs)  # runs _setup_scene
         apply_physx_material_properties(self)

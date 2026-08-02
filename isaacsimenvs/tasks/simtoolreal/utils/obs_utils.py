@@ -14,15 +14,9 @@ from isaaclab.utils.math import convert_quat, quat_apply, quat_from_angle_axis, 
 # ----------------------------------------------------------------------------
 
 
-NUM_JOINTS: int = 29
 NUM_FINGERTIPS: int = 5
 NUM_KEYPOINTS: int = 4
 
-# Policy was trained against the palm center, not the raw wrist body.
-PALM_CENTER_OFFSET: tuple[float, float, float] = (-0.0, -0.02, 0.16)
-
-# Shift fingertip body origins to the approximate pad centers.
-FINGERTIP_OFFSET: tuple[float, float, float] = (0.02, 0.002, 0.0)
 
 # Object-frame keypoint corners before scaling.
 KEYPOINT_CORNERS: tuple[tuple[int, int, int], ...] = (
@@ -33,9 +27,6 @@ KEYPOINT_CORNERS: tuple[tuple[int, int, int], ...] = (
 )
 
 OBS_FIELD_SIZES: dict[str, int] = {
-    "joint_pos": NUM_JOINTS,
-    "joint_vel": NUM_JOINTS,
-    "prev_action_targets": NUM_JOINTS,
     "palm_pos": 3,
     "palm_rot": 4,
     "palm_vel": 6,
@@ -54,9 +45,12 @@ OBS_FIELD_SIZES: dict[str, int] = {
 }
 
 
-def compute_obs_dim(field_list) -> int:
+_JOINT_SCALED_FIELDS = ("joint_pos", "joint_vel", "prev_action_targets")
+
+
+def compute_obs_dim(field_list, num_joints) -> int:
     """Return total tensor dim for an ordered list of obs field names."""
-    return sum(OBS_FIELD_SIZES[f] for f in field_list)
+    return sum(num_joints if f in _JOINT_SCALED_FIELDS else OBS_FIELD_SIZES[f] for f in field_list)
 
 
 def _stack_obs_dict(obs_dict: dict[str, torch.Tensor], field_list) -> torch.Tensor:
@@ -88,16 +82,27 @@ def _perturb_quat(q_wxyz: torch.Tensor, max_deg: float) -> torch.Tensor:
 def _apply_local_offset(
     pos_w: torch.Tensor,
     rot_wxyz: torch.Tensor,
-    offset: tuple[float, float, float],
+    offset: tuple[float, float, float] | torch.Tensor,
     batch_shape: tuple[int, ...],
 ) -> torch.Tensor:
-    """Apply one local-frame offset to batched world poses."""
+    """Apply a local-frame offset, shared (3,) or per-element (M, 3), to batched world poses."""
     offset_t = torch.as_tensor(offset, device=pos_w.device, dtype=pos_w.dtype)
+    if offset_t.ndim == 2:
+        offset_t = offset_t.unsqueeze(0)
     offset_t = offset_t.expand(*batch_shape, 3)
     shifted = quat_apply(
         rot_wxyz.reshape(-1, 4), offset_t.reshape(-1, 3)
     ).reshape(*batch_shape, 3)
     return pos_w + shifted
+
+
+def _fingertip_offset(env, device, dtype):
+    """Per-fingertip local offsets, ordered like env's fingertip bodies."""
+    offsets = env.cfg.robot.fingertip_offset_by_body
+    return torch.tensor(
+        [offsets[name] for name in env._fingertip_body_names],
+        device=device, dtype=dtype,
+    )
 
 
 def _keypoints_world(
@@ -164,7 +169,13 @@ def compute_intermediate_values(env) -> None:
     goal_rot = env.goal_viz.data.root_quat_w
 
     ft_state = env.robot.data.body_state_w[:, env._fingertip_body_ids, :]
-    ft_pos = ft_state[:, :, 0:3] - env_origins.unsqueeze(1)
+    # Fingertip distances are measured from the offset pad points, not body origins.
+    ft_pos = _apply_local_offset(
+        ft_state[:, :, 0:3],
+        ft_state[:, :, 3:7],
+        _fingertip_offset(env, ft_state.device, ft_state.dtype),
+        (env.num_envs, NUM_FINGERTIPS),
+    ) - env_origins.unsqueeze(1)
     env._curr_fingertip_distances = torch.norm(
         ft_pos - obj_pos.unsqueeze(1), dim=-1
     )  # (N, 5)
@@ -241,7 +252,7 @@ def build_observations(env) -> dict[str, torch.Tensor]:
     palm_vel = palm_state[:, 7:13]
 
     palm_center_pos_w = _apply_local_offset(
-        palm_pos_w, palm_rot, PALM_CENTER_OFFSET, (env.num_envs,)
+        palm_pos_w, palm_rot, env.cfg.robot.palm_center_offset, (env.num_envs,)
     )
     palm_pos = palm_center_pos_w - env_origins
 
@@ -252,7 +263,7 @@ def build_observations(env) -> dict[str, torch.Tensor]:
     ft_pos_w = _apply_local_offset(
         ft_body_pos_w,
         ft_body_rot_w,
-        FINGERTIP_OFFSET,
+        _fingertip_offset(env, ft_body_pos_w.device, ft_body_pos_w.dtype),
         (env.num_envs, NUM_FINGERTIPS),
     )
 
@@ -461,7 +472,6 @@ def build_student_observations(env) -> dict[str, torch.Tensor]:
 
 
 __all__ = [
-    "NUM_JOINTS",
     "NUM_FINGERTIPS",
     "NUM_KEYPOINTS",
     "KEYPOINT_CORNERS",

@@ -80,7 +80,7 @@ def main() -> None:
     print()
     print(f"[smoke] PhysX joint parameters (canonical order):")
     print(f"  {'idx':>3}  {'name':<22s}  {'K':>8s}  {'D':>8s}  {'armature':>8s}  {'friction':>8s}  {'effort':>8s}")
-    for i in range(29):
+    for i in range(len(JOINT_NAMES_CANONICAL)):
         lab_j = perm[i]
         print(
             f"  [{i:2d}] {JOINT_NAMES_CANONICAL[i]:<22s}  "

@@ -3,7 +3,6 @@
 # -----------------------------------------------------------------------------
 decimation: 2
 episode_length_s: 10.0
-action_space: 29
 # observation_space / state_space are computed in SimToolRealEnv.__init__ from
 # obs.obs_list / obs.state_list (see Phase D). Configclass defaults (140/140)
 # act only as transient placeholders before __init__ overwrites them.
@@ -44,7 +43,6 @@ scene:
 # 3) assets — URDFs, procedural-generation knobs, static per-material frictions
 # -----------------------------------------------------------------------------
 assets:
-  robot_urdf: "assets/urdf/kuka_sharpa_description/iiwa14_left_sharpa_adjusted_restricted.urdf"
   table_urdf: "assets/urdf/table_narrow.urdf"
 
   object_name: "handle_head_primitives"
