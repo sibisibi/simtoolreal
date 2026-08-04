@@ -1,0 +1,27 @@
+# Robot facts for the FR3 plus XHand end effector. Payload mass, center of
+# mass, and inertia are from LeFranX franka_server.cpp, aggregated from the
+# URDF post-flange inertials with the adapter weighed in. Collision
+# thresholds are the values that ran real replays, from LeFranX's use of
+# libfranka's setCollisionBehavior, one torque vector and one force value
+# applied to both the lower and upper, acceleration and nominal thresholds.
+#
+# The payload is declared exactly once, here or in Desk, never both. Setting
+# it in both places double counts the end effector mass on the robot.
+
+robot_ip: 192.168.18.1
+
+payload:
+  mass: 1.319466
+  center_of_mass: [0.030543, 0.015826, 0.046413]
+  # Column major per SetLoad.srv, but the tensor is symmetric so row major
+  # and column major flatten to the same nine numbers.
+  inertia:
+    [
+      0.003996128, -0.001019501, -0.000380339,
+      -0.001019501, 0.002582145, -0.000064065,
+      -0.000380339, -0.000064065, 0.005806676,
+    ]
+
+collision:
+  torque_thresholds: [250.0, 250.0, 250.0, 250.0, 200.0, 200.0, 150.0]
+  force_thresholds: [150.0, 150.0, 150.0, 150.0, 150.0, 150.0]

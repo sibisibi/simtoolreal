@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>fr3_xhand_bringup</name>
+  <version>0.0.1</version>
+  <description>Launch files for the fr3-xhand deploy stack</description>
+  <maintainer email="tylergwlum@gmail.com">Tyler Lum</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>fr3_xhand_nodes</exec_depend>
+  <exec_depend>ros2bag</exec_depend>
+  <exec_depend>rosbag2_storage_default_plugins</exec_depend>
+  <exec_depend>franka_bringup</exec_depend>
+  <exec_depend>franka_description</exec_depend>
+  <exec_depend>fr3_joint_impedance_controller</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

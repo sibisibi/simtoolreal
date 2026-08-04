@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"pkill -f record_demo.py; rm -rf /home/davian/sibeenkim/project/simtoolreal/deployment/fr3_xhand/demos/demo_* 2>/dev/null; echo killed\",\"description\":\"Stop short recorder, clean partial dem...",
+  "error": "Exit code 144",
+  "timestamp": "2026-08-02T23:08:39.974Z",
+  "retry_count": 1
+}

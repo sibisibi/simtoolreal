@@ -1,0 +1,125 @@
+{
+  "updatedAt": "2026-08-02T22:41:30.728Z",
+  "missions": [
+    {
+      "id": "session:4ed5f65d-e185-4a02-b699-d917a47cedb3:none",
+      "source": "session",
+      "name": "none",
+      "objective": "Session mission",
+      "createdAt": "2026-08-02T22:35:40.369Z",
+      "updatedAt": "2026-08-02T22:41:30.728Z",
+      "status": "done",
+      "workerCount": 1,
+      "taskCounts": {
+        "total": 1,
+        "pending": 0,
+        "blocked": 0,
+        "inProgress": 0,
+        "completed": 1,
+        "failed": 0
+      },
+      "agents": [
+        {
+          "name": "ros2-scaffold:aros2-s",
+          "role": "ros2-scaffold",
+          "ownership": "aros2-scaffold-46857b6d28ba7558",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-08-02T22:41:30.728Z"
+        }
+      ],
+      "timeline": [
+        {
+          "id": "session-start:aros2-scaffold-46857b6d28ba7558:2026-08-02T22:35:40.369Z",
+          "at": "2026-08-02T22:35:40.369Z",
+          "kind": "update",
+          "agent": "ros2-scaffold:aros2-s",
+          "detail": "started ros2-scaffold:aros2-s",
+          "sourceKey": "session-start:aros2-scaffold-46857b6d28ba7558"
+        },
+        {
+          "id": "session-stop:aros2-scaffold-46857b6d28ba7558:2026-08-02T22:36:36.968Z",
+          "at": "2026-08-02T22:36:36.968Z",
+          "kind": "completion",
+          "agent": "ros2-scaffold:aros2-s",
+          "detail": "completed",
+          "sourceKey": "session-stop:aros2-scaffold-46857b6d28ba7558"
+        },
+        {
+          "id": "session-stop:aros2-scaffold-46857b6d28ba7558:2026-08-02T22:36:40.351Z",
+          "at": "2026-08-02T22:36:40.351Z",
+          "kind": "completion",
+          "agent": "ros2-scaffold:aros2-s",
+          "detail": "completed",
+          "sourceKey": "session-stop:aros2-scaffold-46857b6d28ba7558"
+        },
+        {
+          "id": "session-stop:aros2-scaffold-46857b6d28ba7558:2026-08-02T22:36:42.811Z",
+          "at": "2026-08-02T22:36:42.811Z",
+          "kind": "completion",
+          "agent": "ros2-scaffold:aros2-s",
+          "detail": "completed",
+          "sourceKey": "session-stop:aros2-scaffold-46857b6d28ba7558"
+        },
+        {
+          "id": "session-stop:aros2-scaffold-46857b6d28ba7558:2026-08-02T22:36:44.718Z",
+          "at": "2026-08-02T22:36:44.718Z",
+          "kind": "completion",
+          "agent": "ros2-scaffold:aros2-s",
+          "detail": "completed",
+          "sourceKey": "session-stop:aros2-scaffold-46857b6d28ba7558"
+        },
+        {
+          "id": "session-stop:aros2-scaffold-46857b6d28ba7558:2026-08-02T22:36:46.779Z",
+          "at": "2026-08-02T22:36:46.779Z",
+          "kind": "completion",
+          "agent": "ros2-scaffold:aros2-s",
+          "detail": "completed",
+          "sourceKey": "session-stop:aros2-scaffold-46857b6d28ba7558"
+        },
+        {
+          "id": "session-stop:aros2-scaffold-46857b6d28ba7558:2026-08-02T22:36:50.975Z",
+          "at": "2026-08-02T22:36:50.975Z",
+          "kind": "completion",
+          "agent": "ros2-scaffold:aros2-s",
+          "detail": "completed",
+          "sourceKey": "session-stop:aros2-scaffold-46857b6d28ba7558"
+        },
+        {
+          "id": "session-stop:aros2-scaffold-46857b6d28ba7558:2026-08-02T22:36:52.971Z",
+          "at": "2026-08-02T22:36:52.971Z",
+          "kind": "completion",
+          "agent": "ros2-scaffold:aros2-s",
+          "detail": "completed",
+          "sourceKey": "session-stop:aros2-scaffold-46857b6d28ba7558"
+        },
+        {
+          "id": "session-stop:aros2-scaffold-46857b6d28ba7558:2026-08-02T22:36:54.893Z",
+          "at": "2026-08-02T22:36:54.893Z",
+          "kind": "completion",
+          "agent": "ros2-scaffold:aros2-s",
+          "detail": "completed",
+          "sourceKey": "session-stop:aros2-scaffold-46857b6d28ba7558"
+        },
+        {
+          "id": "session-stop:aros2-scaffold-46857b6d28ba7558:2026-08-02T22:36:57.667Z",
+          "at": "2026-08-02T22:36:57.667Z",
+          "kind": "completion",
+          "agent": "ros2-scaffold:aros2-s",
+          "detail": "completed",
+          "sourceKey": "session-stop:aros2-scaffold-46857b6d28ba7558"
+        },
+        {
+          "id": "session-stop:aee1a4b57acc45d5f:2026-08-02T22:41:30.728Z",
+          "at": "2026-08-02T22:41:30.728Z",
+          "kind": "completion",
+          "agent": "ros2-scaffold:aros2-s",
+          "detail": "completed",
+          "sourceKey": "session-stop:aee1a4b57acc45d5f"
+        }
+      ]
+    }
+  ]
+}

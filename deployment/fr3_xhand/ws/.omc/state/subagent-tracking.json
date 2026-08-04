@@ -1,0 +1,17 @@
+{
+  "agents": [
+    {
+      "agent_id": "aros2-scaffold-46857b6d28ba7558",
+      "agent_type": "ros2-scaffold",
+      "started_at": "2026-08-02T22:35:40.369Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-08-02T22:36:57.667Z",
+      "duration_ms": 77298
+    }
+  ],
+  "total_spawned": 1,
+  "total_completed": 9,
+  "total_failed": 0,
+  "last_updated": "2026-08-02T22:41:30.829Z"
+}

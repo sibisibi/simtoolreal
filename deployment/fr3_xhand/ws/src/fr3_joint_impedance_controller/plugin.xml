@@ -1,0 +1,9 @@
+<library path="fr3_joint_impedance_controller">
+  <class name="fr3_joint_impedance_controller/JointImpedanceController"
+         type="fr3_joint_impedance_controller::JointImpedanceController"
+         base_class_type="controller_interface::ControllerInterface">
+    <description>
+      Tracks /fr3/joint_target with tau = k (q_target - q) - d dq at 1 kHz.
+    </description>
+  </class>
+</library>

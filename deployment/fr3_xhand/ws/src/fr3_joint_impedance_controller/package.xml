@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>fr3_joint_impedance_controller</name>
+  <version>0.1.0</version>
+  <description>Joint impedance controller tracking policy targets with the SimToolReal trained gains</description>
+  <maintainer email="bioceo78@gmail.com">sibeenkim</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>controller_interface</depend>
+  <depend>pluginlib</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
+  <depend>realtime_tools</depend>
+  <depend>sensor_msgs</depend>
+  <depend>eigen</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
