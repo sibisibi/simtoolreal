@@ -30,6 +30,8 @@ class HomeRobotNode(Node):
         self.arm_names = contract.joint_order[: self.num_arm]
         self.hand_names = contract.joint_order[self.num_arm :]
         self.target_pos = contract.default_joint_pos
+        self.joint_lower = contract.joint_lower
+        self.joint_upper = contract.joint_upper
 
         self.arm_q: np.ndarray | None = None
         self.hand_q: np.ndarray | None = None
@@ -42,11 +44,23 @@ class HomeRobotNode(Node):
         self.arm_pub = self.create_publisher(JointState, "/fr3/joint_target", qos)
         self.hand_pub = self.create_publisher(JointState, "/xhand/joint_target", qos)
 
+    @staticmethod
+    def _by_name(msg: JointState, names: list[str]) -> np.ndarray:
+        """Reorder a JointState into contract order.
+
+        Never trust the publisher's order. joint_state_broadcaster reports the
+        arm as 1, 3, 6, 7, 2, 4, 5, and taking msg.position as it arrives put
+        the measured angles onto the wrong joints, which commanded joint 6 to
+        -131 deg while it sat at 110 and tripped a power limit reflex.
+        """
+        idx = [list(msg.name).index(n) for n in names]
+        return np.array(msg.position)[idx]
+
     def _on_arm_state(self, msg: JointState) -> None:
-        self.arm_q = np.array(msg.position)
+        self.arm_q = self._by_name(msg, self.arm_names)
 
     def _on_hand_state(self, msg: JointState) -> None:
-        self.hand_q = np.array(msg.position)
+        self.hand_q = self._by_name(msg, self.hand_names)
 
     def ready(self) -> bool:
         return self.arm_q is not None and self.hand_q is not None
@@ -72,6 +86,9 @@ class HomeRobotNode(Node):
                 )
 
     def _publish_targets(self, pos: np.ndarray) -> None:
+        # policy_node clamps its targets and this node did not, so a target
+        # outside a joint's own limits could reach the controller unchallenged.
+        pos = np.clip(pos, self.joint_lower, self.joint_upper)
         stamp = self.get_clock().now().to_msg()
 
         arm_msg = JointState()

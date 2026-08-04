@@ -1,6 +1,6 @@
 {
-  "object_name": "davian_blue_scrub_brush",
-  "mesh": "deployment/fr3_xhand/demos/demo_20260803_081042/sam3d_output/mesh_canonical.obj",
+  "object_name": "davian_handle_eraser",
+  "mesh": "assets/urdf/davian/davian_handle_eraser/davian_handle_eraser.obj",
   "object_scales": [
     1.9197,
     0.6627,

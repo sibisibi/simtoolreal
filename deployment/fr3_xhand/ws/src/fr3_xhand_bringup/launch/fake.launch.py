@@ -24,7 +24,7 @@ from launch_ros.actions import Node
 DEPLOY_PYTHON = "/home/davian/sibeenkim/project/simtoolreal/.venv_deploy/bin/python3"
 DEFAULT_OBJECT_SPEC = (
     "/home/davian/sibeenkim/project/simtoolreal/deployment/fr3_xhand/objects/"
-    "claw_hammer_swing_down.json"
+    "davian_handle_eraser.json"
 )
 
 BAG_TOPICS = [

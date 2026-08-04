@@ -8,7 +8,7 @@
 # The payload is declared exactly once, here or in Desk, never both. Setting
 # it in both places double counts the end effector mass on the robot.
 
-robot_ip: 192.168.18.1
+robot_ip: 172.16.0.2
 
 payload:
   mass: 1.319466

@@ -202,3 +202,19 @@ BRUSH_NAME_TO_OBJECT = {
     ),
 }
 NAME_TO_OBJECT.update(BRUSH_NAME_TO_OBJECT)
+
+# Lab objects reconstructed from our own camera. The meshes stay under
+# assets/urdf/davian because they are our data, while the tasks are listed in
+# the eraser category, whose handle_eraser shares this tool's loop handle.
+DAVIAN_NAME_TO_OBJECT = {
+    "davian_handle_eraser": Object(
+        urdf_path=(
+            get_repo_root_dir()
+            / "assets/urdf/davian/davian_handle_eraser/davian_handle_eraser.urdf"
+        ),
+        # Measured from the reconstruction, the grasp box is the handle arch.
+        scale=(1.9197, 0.6627, 0.3),
+        need_vhacd=False,
+    ),
+}
+NAME_TO_OBJECT.update(DAVIAN_NAME_TO_OBJECT)

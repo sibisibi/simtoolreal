@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!-- Our real bench, taken from DexManip sim2real/config/arm_ik.yaml.
+
+     table_side 0.90, slab_thickness 0.03, origin_to_table 0.12, table_height 0.70.
+     Their scene puts the origin at the robot base and the slab top at z = 0, so
+     the table surface is level with the base plate. Our bench matches, and so
+     does the sim, which is why only the size and reach change here.
+
+     Placement. The env writes this link's root at the env origin plus
+     table_reset_z, so the offset below carries the real geometry. The table
+     centre sits 0.57 m in front of the base, which under the base frame's
+     -90 degree yaw is 0.09 m along world -y. The 0.135 puts the 3 cm slab's
+     top at world 0.53, level with the robot base.
+
+     One box only. The scaling helper in scene_utils rewrites every <box size>
+     it finds, so a second box here would be resized into a second table. The
+     base plate is visual only in DexManip's own scene and lives in the viewer.
+-->
+<robot name="table_davian_handle_eraser_wipe_up_down">
+  <link name="box">
+    <visual>
+      <material name="wood">
+        <color rgba="0.82 0.56 0.35 1.0"/>
+      </material>
+      <origin xyz="0 -0.09 0.135"/>
+      <geometry>
+        <box size="0.9 0.9 0.03"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.09 0.135"/>
+      <geometry>
+        <box size="0.9 0.9 0.03"/>
+      </geometry>
+    </collision>
+
+    <!-- Whiteboard, 40 by 28.5 by 1 cm, standing on the table.
+
+         Measured off the far right table corner as the robot sees it. The 40 cm
+         runs with gravity, from the table surface to 40 cm up. The 28.5 cm runs
+         along the robot's front to back axis, and the 1 cm is the thickness, so
+         the board faces sideways rather than toward the robot.
+
+         Its far face sits 25 cm in from the far table edge, and the thickness
+         spans 15.5 to 16.5 cm in from the right edge. In the base frame that is
+         x 0.485 to 0.770, y -0.295 to -0.285, z 0 to 0.40. The origin below is
+         that centre carried into this link's frame through the base transform.
+    -->
+    <visual>
+      <material name="whiteboard">
+        <color rgba="1.0 1.0 1.0 1.0"/>
+      </material>
+      <origin xyz="-0.29 -0.1475 0.35"/>
+      <geometry>
+        <box size="0.01 0.285 0.4"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.29 -0.1475 0.35"/>
+      <geometry>
+        <box size="0.01 0.285 0.4"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="500"/>
+      <friction value="1.0"/>
+      <inertia ixx="1000.0" ixy="0.0" ixz="0.0" iyy="1000.0" iyz="0.0" izz="1000.0"/>
+    </inertial>
+  </link>
+</robot>

@@ -232,3 +232,10 @@ videos/
 outputs/
 evals_isaacsim/
 evals/
+
+# Reference material, cloned or downloaded, not source. 27 GB of it, mostly
+# SAM 3D checkpoints.
+.reference/
+
+# Tool state, per machine.
+.omc/

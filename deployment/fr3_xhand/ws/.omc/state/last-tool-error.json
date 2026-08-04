@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"pkill -f record_demo.py; rm -rf /home/davian/sibeenkim/project/simtoolreal/deployment/fr3_xhand/demos/demo_* 2>/dev/null; echo killed\",\"description\":\"Stop short recorder, clean partial dem...",
-  "error": "Exit code 144",
-  "timestamp": "2026-08-02T23:08:39.974Z",
+  "tool_input_preview": "{\"command\":\"source /opt/ros/humble/setup.bash 2>/dev/null; for t in /fr3/joint_target /xhand/joint_target /robot_frame/goal_object_pose /robot_frame/current_object_pose; do echo \\\"--- $t\\\"; timeout 12...",
+  "error": "Exit code 143\n--- /fr3/joint_target\naverage rate: 59.998\nTerminated\n--- /xhand/joint_target\naverage rate: 59.969\nTerminated\n--- /robot_frame/goal_object_pose\naverage rate: 59.995\nTerminated\n--- /robot_frame/current_object_pose\naverage rate: 29.995\nTerminated",
+  "timestamp": "2026-08-04T19:25:21.573Z",
   "retry_count": 1
 }

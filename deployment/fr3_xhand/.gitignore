@@ -4,6 +4,14 @@ ws/src/franka_description/
 ws/install/
 ws/log/
 
+# Registration frames belong to one scene setup and init_scene.py rewrites
+# them whenever the object moves.
+init/
+
+# Robot session output, bags and raw frames. A minute of RGB-D is 6.4 GB.
+sessions/
+ws/rosbag2_*/
+
 # Demo capture data is a local artifact, the policy-consumed files stay
 # tracked, picks, goal trajectory, mask, intrinsics, canonical mesh.
 demos/*/rgb/

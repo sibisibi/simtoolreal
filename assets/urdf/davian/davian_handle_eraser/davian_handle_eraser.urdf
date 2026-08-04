@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<robot name="davian_handle_eraser">
+  <link name="davian_handle_eraser">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="davian_handle_eraser.obj" scale="1 1 1"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="davian_handle_eraser.obj" scale="1 1 1"/>
+      </geometry>
+    </collision>
+    <!-- Mass is weighed, 58 g, not the benchmark's density 400 which gives 127 g.
+         Inertia is the convex hulls' tensor at the density that matches the
+         scale, 182.35 kg per cubic metre. The decomposition script keeps an
+         explicit mass verbatim, so this survives regeneration. -->
+    <inertial>
+      <origin xyz="-0.00335212 0.000305564 -0.0384008" rpy="0 0 0"/>
+      <mass value="0.058"/>
+      <inertia ixx="3.68609e-05" ixy="-3.36002e-07" ixz="-1.29365e-06" iyy="0.000118542" iyz="1.22459e-07" izz="0.000112652"/>
+    </inertial>
+  </link>
+</robot>

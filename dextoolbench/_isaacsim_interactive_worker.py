@@ -41,7 +41,10 @@ def _sim_get_state(inner, obs):
     obs_np = obs["policy"][0].detach().cpu().numpy()
     lower = inner._joint_lower_canon.detach().cpu().numpy()
     upper = inner._joint_upper_canon.detach().cpu().numpy()
-    joint_pos = 0.5 * (obs_np[:29] + 1.0) * (upper - lower) + lower
+    # The joint block opens the observation and is as long as the robot has
+    # joints, 29 on the authors' KUKA and Sharpa, 19 on our FR3 and XHand.
+    n_joints = lower.shape[0]
+    joint_pos = 0.5 * (obs_np[:n_joints] + 1.0) * (upper - lower) + lower
 
     origin = inner.scene.env_origins[0].detach().cpu().numpy()
 

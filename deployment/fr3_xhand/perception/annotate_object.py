@@ -1,9 +1,12 @@
-"""Annotate the brush with the DexToolBench grasp box convention.
+"""Annotate the tool with a grasp box, our own procedure.
 
 Builds the canonical object frame, origin at the handle arch centroid, x along
-the arch bar, z up away from the bristles, following the convention verified
-on the authors' blue_brush asset, origin in the handle, x toward the head,
-scale equal to grasp box extent over 0.06.
+the arch bar, z up away from the bristles. The authors never derive a frame,
+their assets ship already canonical, so this whole derivation is ours. It was
+shaped to land where handle_eraser's frame sits, origin near the top with the
+bar along x, and that match was measured rather than assumed.
+
+The box ratios are a heuristic taken off handle_eraser, not an author rule.
 
 Outputs, mesh_canonical.obj, canonicalized poses and goal trajectory, the
 object spec JSON, and a side by side render of the authors' annotation and
@@ -136,7 +139,7 @@ def main() -> None:
     print(f"[annotate] rewrote goal_trajectory.json with {len(goals)} canonical goals")
 
     spec = {
-        "object_name": "davian_blue_scrub_brush",
+        "object_name": "davian_handle_eraser",
         "mesh": str((demo / "sam3d_output/mesh_canonical.obj").relative_to(REPO_ROOT)),
         "object_scales": [round(float(s), 4) for s in scales],
         "goal_trajectory": str((demo / "goal_trajectory.json").relative_to(REPO_ROOT)),
@@ -144,7 +147,7 @@ def main() -> None:
         "box ratios mirrored from dextoolbench handle_eraser, the benchmark's own "
         "loop-handle tool, user-confirmed topological twin",
     }
-    spec_path = REPO_ROOT / "deployment/fr3_xhand/objects/davian_blue_scrub_brush.json"
+    spec_path = REPO_ROOT / "deployment/fr3_xhand/objects/davian_handle_eraser.json"
     spec_path.write_text(json.dumps(spec, indent=2))
     print(f"[annotate] wrote {spec_path}")
 

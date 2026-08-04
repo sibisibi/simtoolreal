@@ -14,6 +14,9 @@ DEXTOOLBENCH_DATA_STRUCTURE: Dict[str, Dict[str, List[str]]] = {
     "eraser": {
         "flat_eraser": ["wipe_smile", "wipe_c"],
         "handle_eraser": ["wipe_smile", "wipe_c"],
+        # Our lab tool, reconstructed from the D435i. Its handle matches
+        # handle_eraser, and wipe_up_down holds the human demo's goals.
+        "davian_handle_eraser": ["wipe_up_down"],
     },
     "brush": {
         "blue_brush": ["sweep_forward", "sweep_right"],

@@ -6,15 +6,21 @@ transforms poses into the robot base frame with the lab calibration, then
 downsamples to 3 Hz and truncates to the first goal above the table by the
 paper's lift-off rule.
 
-Poses leave here in the ROBOT BASE frame, xyz plus xyzw, matching what
-goal_node publishes on /robot_frame/goal_object_pose.
+Pass the CANONICAL mesh, the one the live node and the sim load. FoundationPose
+gives a different answer per mesh file, because it recentres on the axis aligned
+bounding box and voxel downsamples on the mesh's own axes. Tracking the raw
+reconstruction here and rotating the poses afterwards lands 8 mm and 7 deg away
+from tracking the canonical mesh directly, on a stationary object.
+
+Poses leave here in the ROBOT BASE frame and the canonical object frame, xyz
+plus xyzw, matching what goal_node publishes on /robot_frame/goal_object_pose.
 
 Runs in the fp conda env, FoundationPose from the lab checkout.
 
     /home/davian/anaconda3/envs/fp/bin/python \
         deployment/fr3_xhand/perception/extract_goals.py \
         --demo deployment/fr3_xhand/demos/demo_20260803_081042 \
-        --mesh deployment/fr3_xhand/demos/demo_20260803_081042/sam3d_output/mesh_scaled.obj
+        --mesh assets/urdf/davian/davian_handle_eraser/davian_handle_eraser.obj
 """
 
 from __future__ import annotations
@@ -26,9 +32,9 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-import trimesh
 
-sys.path.insert(0, "/home/davian/kinamkim/fp/FoundationPose")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from tracker import ObjectTracker  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 LAB_EXTRINSICS = Path(
@@ -38,20 +44,16 @@ LAB_EXTRINSICS = Path(
 
 GOAL_HZ = 3.0
 CAPTURE_HZ = 30.0
-LIFTOFF_M = 0.10  # paper rule, trajectory starts at the first goal 10 cm up
-# The 252-candidate registration overflows the free VRAM at full resolution,
-# half resolution stays far inside the trained 1 cm pose noise budget.
-DOWNSCALE = 2
+# Paper rule, appendix E, lift-off truncation at 10 cm above the resting pose.
+LIFTOFF_M = 0.10
 
 
 def load_frame(demo: Path, idx: int):
+    """Full resolution BGR and uint16 mm depth, exactly as the camera gives them."""
     rgb = cv2.imread(str(demo / "rgb" / f"{idx:06d}.png"))
     depth = cv2.imread(str(demo / "depth" / f"{idx:06d}.png"), cv2.IMREAD_UNCHANGED)
     assert rgb is not None and depth is not None, f"frame {idx} missing"
-    h, w = depth.shape
-    rgb = cv2.resize(rgb, (w // DOWNSCALE, h // DOWNSCALE), interpolation=cv2.INTER_AREA)
-    depth = cv2.resize(depth, (w // DOWNSCALE, h // DOWNSCALE), interpolation=cv2.INTER_NEAREST)
-    return cv2.cvtColor(rgb, cv2.COLOR_BGR2RGB), depth.astype(np.float64) / 1000.0
+    return rgb, depth
 
 
 def main() -> None:
@@ -67,59 +69,21 @@ def main() -> None:
     start = picks["trajectory_start_frame"]
     end = picks["trajectory_end_frame"]
     k = np.loadtxt(demo / "cam_K.txt")
-    k[:2] /= DOWNSCALE
     t_base_cam = np.load(LAB_EXTRINSICS)["T_base_cam"]
 
-    mesh = trimesh.load(args.mesh, force="mesh")
-    print(f"[goals] mesh {args.mesh}, extents m {np.round(mesh.extents, 4)}")
-
-    # Registration rasterizes 252 pose candidates, the full-detail mesh blows
-    # the VRAM budget. Track on a decimated copy, pose accuracy does not need
-    # bristle geometry.
-    import open3d as o3d
-
-    o3 = o3d.geometry.TriangleMesh(
-        o3d.utility.Vector3dVector(mesh.vertices),
-        o3d.utility.Vector3iVector(mesh.faces),
-    )
-    o3 = o3.simplify_quadric_decimation(target_number_of_triangles=20000)
-    mesh = trimesh.Trimesh(np.asarray(o3.vertices), np.asarray(o3.triangles))
-    print(f"[goals] decimated to {len(mesh.faces)} faces, extents m {np.round(mesh.extents, 4)}")
-
-    import torch  # noqa: F401  FoundationPose imports expect torch first
-    from estimater import FoundationPose, ScorePredictor, PoseRefinePredictor
-    import nvdiffrast.torch as dr
-
-    est = FoundationPose(
-        model_pts=mesh.vertices,
-        model_normals=mesh.vertex_normals,
-        mesh=mesh,
-        scorer=ScorePredictor(),
-        refiner=PoseRefinePredictor(),
-        glctx=dr.RasterizeCudaContext(),
-        debug=0,
-        # The upstream default points at the author's home directory.
-        debug_dir="/tmp/fp_debug",
-    )
+    tracker = ObjectTracker(args.mesh, k)
 
     # The mask was drawn on the sam3d frame, valid at start because the user
     # confirmed the object did not move between the two frames.
     mask = cv2.imread(str(demo / f"mask_{picks['sam3d_frame']:06d}.png"), cv2.IMREAD_GRAYSCALE)
     assert mask is not None
-    mask = cv2.resize(
-        mask, (mask.shape[1] // DOWNSCALE, mask.shape[0] // DOWNSCALE),
-        interpolation=cv2.INTER_NEAREST,
-    )
     rgb, depth = load_frame(demo, start)
-    pose_cam = est.register(
-        K=k, rgb=rgb, depth=depth, ob_mask=mask.astype(bool),
-        iteration=args.register_iters,
-    )
+    pose_cam = tracker.register(rgb, depth, mask, iteration=args.register_iters)
 
     poses_cam = [pose_cam]
     for idx in range(start + 1, end + 1):
         rgb, depth = load_frame(demo, idx)
-        poses_cam.append(est.track_one(rgb=rgb, depth=depth, K=k, iteration=args.track_iters))
+        poses_cam.append(tracker.track(rgb, depth, iteration=args.track_iters))
         if (idx - start) % 150 == 0:
             print(f"[goals] tracked {idx - start} of {end - start}")
 
@@ -156,6 +120,14 @@ def main() -> None:
 
     np.save(demo / "poses_base_30hz.npy", np.stack(poses_base))
     print("[goals] full 30 Hz base-frame poses saved for inspection")
+
+    # Camera-frame poses do not depend on the calibration, so a fresh solve
+    # rebuilds everything downstream with recompose_goals.py instead of another
+    # tracking pass. The calibration used is saved beside them, because the lab
+    # tool overwrites its latest file in place.
+    np.save(demo / "poses_cam_30hz.npy", np.stack([np.asarray(p) for p in poses_cam]))
+    np.save(demo / "t_base_cam_used.npy", t_base_cam)
+    print("[goals] camera-frame poses and the calibration used saved for recompose")
 
 
 if __name__ == "__main__":

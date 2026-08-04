@@ -16,6 +16,7 @@ Usage:
 """
 
 import argparse
+import json
 import multiprocessing
 import time
 import traceback
@@ -52,6 +53,36 @@ _ARM_DEFAULT[3] += np.deg2rad(10)  # startArmHigher
 DEFAULT_DOF_POS = np.zeros(29)
 DEFAULT_DOF_POS[:7] = _ARM_DEFAULT
 
+# The viser scene used to draw a hardcoded KUKA while the worker simulated
+# whichever robot the env config names. The deploy contract carries the robot
+# the env actually builds, and reading it needs no Isaac, which matters because
+# this process never boots Kit.
+_CONTRACT_PATH = REPO_ROOT / "deployment/fr3_xhand/contract/a4h1.json"
+
+# Our bench, from DexManip sim2real/config/arm_ik.yaml. Shown before a task is
+# picked, where there is no task URDF to read. Once a task loads, the table
+# comes from that URDF, which is what the simulator builds.
+BENCH_TABLE_SIZE = (0.9, 0.9, 0.03)
+BENCH_TABLE_XYZ = (0.0, -0.09, 0.135)
+
+
+def _deploy_contract() -> dict:
+    assert _CONTRACT_PATH.exists(), (
+        f"deploy contract missing at {_CONTRACT_PATH}, "
+        "regenerate it with deployment/fr3_xhand/export_contract.py"
+    )
+    with open(_CONTRACT_PATH) as f:
+        return json.load(f)
+
+
+def _display_dof_pos(robot: ViserUrdf, contract: dict) -> np.ndarray:
+    """Default pose ordered the way the URDF lists its actuated joints."""
+    defaults = dict(zip(contract["joint_order"], contract["default_joint_pos"]))
+    names = list(robot.get_actuated_joint_limits().keys())
+    missing = [n for n in names if n not in defaults]
+    assert not missing, f"contract has no default pose for {missing}"
+    return np.array([defaults[n] for n in names])
+
 # ── Per-task environment URDFs ─────────────────────────────────────
 
 ENV_DIR = REPO_ROOT / "assets" / "urdf" / "dextoolbench" / "environments"
@@ -71,12 +102,13 @@ def _get_task_table_urdf_abs(category, object_name, task_name):
 
 def _parse_table_urdf(urdf_path):
     # type: (str) -> Tuple[list, list, list]
-    """Parse a table URDF and extract props (nail, whiteboard, bowl/plate meshes).
+    """Parse a table URDF and extract the body plus props.
 
-    Returns (boxes, whiteboards, meshes) where:
+    Returns (boxes, whiteboards, meshes, body) where:
       boxes:       [(name, (x,y,z), (sx,sy,sz), material_name), ...]
       whiteboards: [(x, y, z, w, h), ...]  -- whiteboard surfaces
       meshes:      [(name, (x,y,z), mesh_filename), ...]  -- bowl/plate meshes
+      body:        ((x,y,z), (sx,sy,sz))  -- the wood table body
     """
     tree = ET.parse(urdf_path)
     root = tree.getroot()
@@ -84,6 +116,7 @@ def _parse_table_urdf(urdf_path):
     boxes = []
     whiteboards = []
     meshes = []
+    body = []
 
     for visual in root.iter("visual"):
         origin = visual.find("origin")
@@ -104,10 +137,14 @@ def _parse_table_urdf(urdf_path):
         if box is not None:
             size = [float(v) for v in box.get("size", "0 0 0").split()]
             if mat_name == "wood":
-                # This is the main table body -- skip, we always draw it
+                # The main table body. It used to be drawn from a constant, which
+                # hid our real bench once the URDF carried it.
+                body.append((tuple(xyz), tuple(size)))
                 continue
             elif mat_name == "whiteboard":
-                whiteboards.append((xyz[0], xyz[1], xyz[2], size[1], size[2]))
+                # Thickness travels with the rest, our board is 1 cm and the
+                # benchmark's is 2 cm, and it used to be drawn from a literal.
+                whiteboards.append((xyz[0], xyz[1], xyz[2], size[1], size[2], size[0]))
             else:
                 # Nail or other box prop
                 boxes.append((mat_name, tuple(xyz), tuple(size)))
@@ -115,7 +152,8 @@ def _parse_table_urdf(urdf_path):
             filename = mesh.get("filename", "")
             meshes.append((mat_name, tuple(xyz), filename))
 
-    return boxes, whiteboards, meshes
+    assert body, f"table URDF {urdf_path} has no wood box for the table body"
+    return boxes, whiteboards, meshes, body[0]
 
 # ── Dataset catalogue (built from metadata.py) ───────────────────
 
@@ -435,30 +473,33 @@ class InteractiveDemo:
 
         self.server.scene.add_grid("/ground", width=2, height=2, cell_size=0.1)
 
-        robot_urdf = (
-            REPO_ROOT / "assets" / "urdf" / "kuka_sharpa_description"
-            / "iiwa14_left_sharpa_adjusted_restricted.urdf"
-        )
+        contract = _deploy_contract()
         self.server.scene.add_frame(
-            "/robot", position=(0, 0.8, 0), wxyz=(1, 0, 0, 0), show_axes=False,
+            "/robot",
+            position=tuple(contract["base_pos"]),
+            wxyz=tuple(contract["base_quat_wxyz"]),
+            show_axes=False,
         )
-        self.robot = ViserUrdf(self.server, robot_urdf, root_node_name="/robot")
-        self.robot.update_cfg(DEFAULT_DOF_POS)
+        self.robot = ViserUrdf(
+            self.server, REPO_ROOT / contract["urdf"], root_node_name="/robot"
+        )
+        self.robot.update_cfg(_display_dof_pos(self.robot, contract))
 
         # Show a default table before any environment is loaded
         self._setup_default_table()
 
     def _setup_default_table(self):
-        """Show a plain wooden table before any environment is loaded."""
+        """Show the bench before any environment is loaded."""
         self._clear_dynamic()
         t = self.server.scene.add_frame(
             "/table", position=(0, 0, TABLE_Z), wxyz=(1, 0, 0, 0), show_axes=False,
         )
         self._dyn.append(t)
         self._add_box(
-            "/table/wood", (0.475, 0.4, 0.3), (0, 0, 0),
+            "/table/wood", BENCH_TABLE_SIZE, BENCH_TABLE_XYZ,
             color=(180, 130, 70), opacity=0.9,
         )
+        self._add_base_plate()
 
     # ── Cascading dropdown ─────────────────────────────────────
 
@@ -527,6 +568,22 @@ class InteractiveDemo:
         self._dyn.append(h)
         return h
 
+    def _add_base_plate(self):
+        """Draw the robot's base plate, which carries no physics.
+
+        DexManip keeps it visual only, since the arm stands on it and the pair
+        would always read zero distance. Numbers are their bench, plate_side
+        0.25 and slab_thickness 0.03, sitting 0.03 back from the table edge with
+        its top level with the table.
+        """
+        # Parented to /robot, so the offset is read straight off their bench in
+        # the robot's own frame, origin_to_table 0.12 less the 0.03 gap and half
+        # the plate, which puts its centre 0.035 behind the base.
+        self._add_box(
+            "/robot/plate", (0.25, 0.25, 0.03), (-0.035, 0.0, -0.015),
+            color=(40, 40, 40),
+        )
+
     def _setup_table(self, table_urdf_path):
         """Parse the per-task URDF and render coloured boxes in viser."""
         self._clear_dynamic()
@@ -535,15 +592,15 @@ class InteractiveDemo:
         )
         self._dyn.append(t)
 
-        # Always draw the wooden table body
-        self._add_box(
-            "/table/wood", (0.475, 0.4, 0.3), (0, 0, 0),
-            color=(180, 130, 70), opacity=0.9,
-        )
-
-        # Parse URDF for additional props
+        # Parse URDF for the table body and any additional props
         if Path(table_urdf_path).exists():
-            boxes, whiteboards, meshes = _parse_table_urdf(table_urdf_path)
+            boxes, whiteboards, meshes, (body_xyz, body_size) = _parse_table_urdf(
+                table_urdf_path
+            )
+            self._add_box(
+                "/table/wood", body_size, body_xyz, color=(180, 130, 70), opacity=0.9,
+            )
+            self._add_base_plate()
 
             # Render nail / wall / other box props with material-appropriate colors
             _MAT_COLORS = {
@@ -557,12 +614,12 @@ class InteractiveDemo:
                 )
 
             # Render whiteboards
-            for i, (bx, by, bz, bw, bh) in enumerate(whiteboards):
+            for i, (bx, by, bz, bw, bh, bt) in enumerate(whiteboards):
                 fw = 0.03  # frame strip width
                 fd = 0.03  # frame depth
                 # White surface
                 self._add_box(
-                    f"/table/wb_surface_{i}", (0.02, bw, bh), (bx, by, bz),
+                    f"/table/wb_surface_{i}", (bt, bw, bh), (bx, by, bz),
                     color=(240, 240, 240),
                 )
                 # Wooden frame: 4 border strips
@@ -593,7 +650,7 @@ class InteractiveDemo:
                           root_node_name="/table")
 
         # Reset robot to default pose while we wait
-        self.robot.update_cfg(DEFAULT_DOF_POS)
+        self.robot.update_cfg(_display_dof_pos(self.robot, _deploy_contract()))
 
     def _setup_object_goal(self, object_name):
         """Add the object + goal URDFs (called once IsaacGym reports ready)."""

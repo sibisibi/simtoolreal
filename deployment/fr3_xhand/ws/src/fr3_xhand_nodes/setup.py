@@ -12,8 +12,8 @@ setup(
     ],
     install_requires=["setuptools"],
     zip_safe=True,
-    maintainer="Tyler Lum",
-    maintainer_email="tylergwlum@gmail.com",
+    maintainer="Sibeen Kim",
+    maintainer_email="bioceo78@gmail.com",
     description="ROS2 nodes for the fr3-xhand deploy stack",
     license="MIT",
     entry_points={
@@ -23,6 +23,7 @@ setup(
             "hand_node = fr3_xhand_nodes.hand_node:main",
             "fake_robot_node = fr3_xhand_nodes.fake_robot_node:main",
             "fake_perception_node = fr3_xhand_nodes.fake_perception_node:main",
+            "perception_node = fr3_xhand_nodes.perception_node:main",
             "home_robot = fr3_xhand_nodes.home_robot:main",
             "arm_bringup = fr3_xhand_nodes.arm_bringup:main",
         ],
