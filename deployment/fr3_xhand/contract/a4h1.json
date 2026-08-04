@@ -1,0 +1,262 @@
+{
+  "arm_armature": {
+    "fr3_joint1": 0.6057,
+    "fr3_joint2": 0.6057,
+    "fr3_joint3": 0.4625,
+    "fr3_joint4": 0.4625,
+    "fr3_joint5": 0.2055,
+    "fr3_joint6": 0.2055,
+    "fr3_joint7": 0.2055
+  },
+  "arm_damping": {
+    "fr3_joint1": 31.1307,
+    "fr3_joint2": 31.1307,
+    "fr3_joint3": 27.2029,
+    "fr3_joint4": 27.2029,
+    "fr3_joint5": 18.1328,
+    "fr3_joint6": 18.1328,
+    "fr3_joint7": 18.1328
+  },
+  "arm_moving_average": 0.1,
+  "arm_stiffness": {
+    "fr3_joint1": 400.0,
+    "fr3_joint2": 400.0,
+    "fr3_joint3": 400.0,
+    "fr3_joint4": 400.0,
+    "fr3_joint5": 400.0,
+    "fr3_joint6": 400.0,
+    "fr3_joint7": 400.0
+  },
+  "base_pos": [
+    -4.423782229423523e-09,
+    0.47999998927116394,
+    0.5299999713897705
+  ],
+  "base_quat_wxyz": [
+    -0.7071067690849304,
+    -3.6901699473901317e-09,
+    -2.9149909153147746e-09,
+    0.7071067690849304
+  ],
+  "checkpoint": "runs/a4h1_20260731_085255/0_simtoolreal_sapg/last/model.pth",
+  "clamp_abs_observations": 10.0,
+  "control_dt": 0.016666666666666666,
+  "default_joint_pos": [
+    0.0,
+    0.26179999113082886,
+    0.0,
+    -2.0071001052856445,
+    0.0,
+    2.3561999797821045,
+    -0.7853999733924866,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "dof_speed_scale": 1.5,
+  "fingertip_bodies_lab_order": [
+    "mid_link2",
+    "pinky_link2",
+    "ring_link2",
+    "index_rota_link2",
+    "thumb_rota_link2"
+  ],
+  "fingertip_offset_by_body": {
+    "index_rota_link2": [
+      0.0,
+      0.0,
+      0.0422482924089424
+    ],
+    "mid_link2": [
+      0.0,
+      0.0,
+      0.042248
+    ],
+    "pinky_link2": [
+      0.0,
+      0.0,
+      0.0422482924089405
+    ],
+    "ring_link2": [
+      0.0,
+      0.0,
+      0.0422482924089404
+    ],
+    "thumb_rota_link2": [
+      0.0,
+      0.0502276499414863,
+      0.0
+    ]
+  },
+  "hand_damping": {
+    "index_joint0": 0.1,
+    "index_joint1": 0.1,
+    "index_joint2": 0.1,
+    "middle_joint0": 0.1,
+    "middle_joint1": 0.1,
+    "pinky_joint0": 0.1,
+    "pinky_joint1": 0.1,
+    "ring_joint0": 0.1,
+    "ring_joint1": 0.1,
+    "thumb_joint0": 0.1,
+    "thumb_joint1": 0.1,
+    "thumb_joint2": 0.1
+  },
+  "hand_moving_average": 0.1,
+  "hand_stiffness": {
+    "index_joint0": 3.0,
+    "index_joint1": 3.0,
+    "index_joint2": 3.0,
+    "middle_joint0": 3.0,
+    "middle_joint1": 3.0,
+    "pinky_joint0": 3.0,
+    "pinky_joint1": 3.0,
+    "ring_joint0": 3.0,
+    "ring_joint1": 3.0,
+    "thumb_joint0": 3.0,
+    "thumb_joint1": 3.0,
+    "thumb_joint2": 3.0
+  },
+  "joint_lower": [
+    -2.900739908218384,
+    -1.836089849472046,
+    -2.900739908218384,
+    -3.077019691467285,
+    -2.876303195953369,
+    0.43982261419296265,
+    -3.050833225250244,
+    0.0,
+    -0.6980000138282776,
+    0.0,
+    -0.17399999499320984,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "joint_order": [
+    "fr3_joint1",
+    "fr3_joint2",
+    "fr3_joint3",
+    "fr3_joint4",
+    "fr3_joint5",
+    "fr3_joint6",
+    "fr3_joint7",
+    "thumb_joint0",
+    "thumb_joint1",
+    "thumb_joint2",
+    "index_joint0",
+    "index_joint1",
+    "index_joint2",
+    "middle_joint0",
+    "middle_joint1",
+    "ring_joint0",
+    "ring_joint1",
+    "pinky_joint0",
+    "pinky_joint1"
+  ],
+  "joint_upper": [
+    2.900739908218384,
+    1.836089849472046,
+    2.900739908218384,
+    -0.1169370785355568,
+    2.876303195953369,
+    4.621633052825928,
+    3.050833225250244,
+    1.8319998979568481,
+    1.5699999332427979,
+    1.5699999332427979,
+    0.17399999499320984,
+    1.9189999103546143,
+    1.9189999103546143,
+    1.9189999103546143,
+    1.9189999103546143,
+    1.9189999103546143,
+    1.9189999103546143,
+    1.9189999103546143,
+    1.9189999103546143
+  ],
+  "keypoint_corners": [
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      1
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ]
+  ],
+  "keypoint_scale": 1.5,
+  "lab_joint_order": [
+    "fr3_joint1",
+    "fr3_joint2",
+    "fr3_joint3",
+    "fr3_joint4",
+    "fr3_joint5",
+    "fr3_joint6",
+    "fr3_joint7",
+    "index_joint0",
+    "middle_joint0",
+    "pinky_joint0",
+    "ring_joint0",
+    "thumb_joint0",
+    "index_joint1",
+    "middle_joint1",
+    "pinky_joint1",
+    "ring_joint1",
+    "thumb_joint1",
+    "index_joint2",
+    "thumb_joint2"
+  ],
+  "num_actions": 19,
+  "num_arm_joints": 7,
+  "num_observations": 110,
+  "object_base_size": 0.04,
+  "obs_list": [
+    "joint_pos",
+    "joint_vel",
+    "prev_action_targets",
+    "palm_pos",
+    "palm_rot",
+    "object_rot",
+    "fingertip_pos_rel_palm",
+    "keypoints_rel_palm",
+    "keypoints_rel_goal",
+    "object_scales"
+  ],
+  "palm_body": "fr3_link7",
+  "palm_center_offset": [
+    0.0,
+    0.0,
+    0.16
+  ],
+  "robot_profile": "fr3-xhand",
+  "run_dir": "runs/a4h1_20260731_085255",
+  "table_reset_z": 0.38,
+  "urdf": "assets/urdf/fr3_xhand_description/fr3_xhand/fr3_xhand.urdf"
+}

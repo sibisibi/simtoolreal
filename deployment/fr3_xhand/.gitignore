@@ -1,0 +1,15 @@
+# Vendor clones live pinned in ws/fr3_xhand.repos, not in this tree.
+ws/src/franka_ros2/
+ws/src/franka_description/
+ws/install/
+ws/log/
+
+# Demo capture data is a local artifact, the policy-consumed files stay
+# tracked, picks, goal trajectory, mask, intrinsics, canonical mesh.
+demos/*/rgb/
+demos/*/depth/
+demos/*/*.mp4
+demos/*/timestamps.txt
+demos/*/poses_base_30hz*.npy
+demos/*/sam3d_output/*
+!demos/*/sam3d_output/mesh_canonical.obj

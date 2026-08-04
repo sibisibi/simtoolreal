@@ -1,0 +1,115 @@
+train:
+  params:
+    algo:
+      name: a2c_continuous
+    config:
+      bounds_loss_coef: 0.0001
+      central_value_config:
+        clip_value: true
+        kl_threshold: 0.016
+        learning_rate: 1e-4
+        mini_epochs: 2
+        minibatch_size: 98304
+        network:
+          central_value: true
+          mlp:
+            activation: elu
+            d2rl: false
+            initializer:
+              name: default
+            regularizer:
+              name: None
+            units:
+            - 1024
+            - 1024
+            - 512
+            - 512
+          name: actor_critic
+        normalize_input: true
+        truncate_grads: true
+      clip_value: true
+      critic_coef: 4.0
+      device: cuda:0
+      device_name: cuda:0
+      e_clip: 0.1
+      entropy_coef: 0.0
+      env_name: rlgpu
+      expl_coef_block_size: 4096
+      expl_reward_coef_embd_size: 32
+      expl_reward_coef_scale: 0.002
+      expl_reward_type: entropy
+      expl_type: mixed_expl_learn_param
+      full_experiment_name: 0_simtoolreal_sapg
+      gamma: 0.99
+      grad_norm: 1.0
+      horizon_length: 16
+      kl_threshold: 0.016
+      learning_rate: 1e-4
+      lr_schedule: adaptive
+      max_epochs: 1000000
+      mini_epochs: 2
+      minibatch_size: 98304
+      mixed_precision: true
+      multi_gpu: false
+      name: 0_simtoolreal_sapg
+      normalize_advantage: true
+      normalize_input: true
+      normalize_value: true
+      num_actors: 24576
+      off_policy_ratio: 1.0
+      player:
+        deterministic: false
+        games_num: 100000
+        print_stats: false
+      ppo: true
+      print_stats: true
+      reward_shaper:
+        scale_value: 0.01
+      save_best_after: 100
+      save_frequency: 1000
+      schedule_type: standard
+      score_to_win: 1000000
+      seq_length: 16
+      tau: 0.95
+      truncate_grads: true
+      use_others_experience: lf
+      value_bootstrap: true
+    env:
+      clip_actions: 1.0
+      clip_observations: 10.0
+    load_checkpoint: false
+    load_path: ''
+    model:
+      name: continuous_a2c_logstd
+    network:
+      mlp:
+        activation: elu
+        d2rl: false
+        initializer:
+          name: default
+        regularizer:
+          name: None
+        units:
+        - 1024
+        - 1024
+        - 512
+        - 512
+      name: actor_critic
+      rnn:
+        before_mlp: true
+        layer_norm: true
+        layers: 1
+        name: lstm
+        units: 1024
+      separate: false
+      space:
+        continuous:
+          fixed_sigma: coef_cond
+          mu_activation: None
+          mu_init:
+            name: default
+          sigma_activation: None
+          sigma_init:
+            name: const_initializer
+            val: 0
+    seed: 42
