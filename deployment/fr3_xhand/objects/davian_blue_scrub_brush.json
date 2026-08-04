@@ -1,0 +1,11 @@
+{
+  "object_name": "davian_blue_scrub_brush",
+  "mesh": "deployment/fr3_xhand/demos/demo_20260803_081042/sam3d_output/mesh_canonical.obj",
+  "object_scales": [
+    1.9197,
+    0.6627,
+    0.3
+  ],
+  "goal_trajectory": "deployment/fr3_xhand/demos/demo_20260803_081042/goal_trajectory.json",
+  "annotation": "grasp box is the loop handle top arch, x along the arch bar, z up, box ratios mirrored from dextoolbench handle_eraser, the benchmark's own loop-handle tool, user-confirmed topological twin"
+}

@@ -1,0 +1,6 @@
+{
+  "sam3d_frame": 1225,
+  "trajectory_start_frame": 1470,
+  "trajectory_end_frame": 2065,
+  "note": "user confirmed the object pose is identical at 1225 and 1470, so the mesh frame registration is valid at trajectory start"
+}

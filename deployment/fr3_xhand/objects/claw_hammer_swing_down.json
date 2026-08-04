@@ -1,0 +1,6 @@
+{
+  "object_name": "claw_hammer",
+  "mesh": "/home/davian/sibeenkim/project/simtoolreal/assets/urdf/dextoolbench/hammer/claw_hammer/claw_hammer.obj",
+  "object_scales": [3.525, 0.75625, 0.6775],
+  "goal_trajectory": "/home/davian/sibeenkim/project/simtoolreal/dextoolbench/trajectories/hammer/claw_hammer/swing_down.json"
+}
